@@ -42,16 +42,17 @@ func query() (*ListOutput, error) {
 	return listOutput, nil
 }
 
-const clockLayout = "15:04:05"
-
-var clockZero, _ = time.Parse(clockLayout, "00:00:00")
-
 func clockDuration(clock string) (time.Duration, error) {
-	c, err := time.Parse(clockLayout, clock)
-	if err != nil {
-		return 0, err
+	sp := strings.Split(clock, ":")
+	if len(sp) != 3 {
+		return 0, fmt.Errorf("wrong string length")
 	}
-	return c.Sub(clockZero), nil
+	h, m, s := sp[0], sp[1], sp[2]
+	d, err := time.ParseDuration(fmt.Sprintf("%sh%sm%ss", h, m, s))
+	if err != nil {
+		return 0, fmt.Errorf("parse duration: %w", err)
+	}
+	return d, nil
 }
 
 func parseNodeList(s string) ([]string, error) {
