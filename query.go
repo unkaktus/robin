@@ -21,7 +21,10 @@ type ListOutput struct {
 			Walltime string `json:"walltime"`
 		} `json:"resources_used"`
 		ResourceList struct {
-			Walltime string `json:"walltime"`
+			NodeNumber       int    `json:"nodecounter"`
+			CPUNumber        int    `json:"ncpus"`
+			MPIProcessNumber int    `json:"mpiprocs"`
+			Walltime         string `json:"walltime"`
 		} `json:"Resource_List"`
 	} `json:"Jobs"`
 }
@@ -71,6 +74,9 @@ type Job struct {
 	Queue             string
 	State             string
 	Nodes             []string
+	NodeNumber        int
+	CPUNumber         int
+	MPIProcessNumber  int
 	CPUTime           time.Duration
 	Walltime          time.Duration
 	RequestedWalltime time.Duration
@@ -111,6 +117,9 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 			Queue:             listedJob.Queue,
 			State:             listedJob.State,
 			Nodes:             nodes,
+			NodeNumber:        listedJob.ResourceList.NodeNumber,
+			CPUNumber:         listedJob.ResourceList.CPUNumber,
+			MPIProcessNumber:  listedJob.ResourceList.MPIProcessNumber,
 			CPUTime:           cpuTime,
 			Walltime:          walltime,
 			RequestedWalltime: requestedWalltime,

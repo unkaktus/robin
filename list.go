@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
+	"strconv"
 
 	"github.com/olekukonko/tablewriter"
 )
 
 func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "ID", "State", "Queue", "Time", "Nodes"})
+	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes", "MPI"})
 
 	sort.Slice(jobList, func(i, j int) bool {
 		return jobList[i].Name < jobList[j].Name
@@ -21,11 +21,11 @@ func showTable(jobList []Job) error {
 		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
 		table.Append([]string{
 			job.Name,
-			job.ID,
 			job.State,
 			job.Queue,
 			fmt.Sprintf("%s/%s (%d%%)", job.Walltime, job.RequestedWalltime, timePercentage),
-			strings.Join(job.Nodes, ", "),
+			strconv.Itoa(job.NodeNumber),
+			fmt.Sprintf("%d/%d", job.MPIProcessNumber/job.NodeNumber, job.MPIProcessNumber),
 		})
 	}
 	table.Render()
