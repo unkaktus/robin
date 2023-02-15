@@ -19,7 +19,7 @@ func showTable(jobList []Job) error {
 			job.ID,
 			job.State,
 			job.Queue,
-			fmt.Sprintf("%s (%d%%)", job.CPUTime, timePercentage),
+			fmt.Sprintf("%s/%s (%d%%)", job.CPUTime, job.Walltime, timePercentage),
 			strings.Join(job.Nodes, ", "),
 		})
 	}
