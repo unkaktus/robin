@@ -1,54 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 )
 
-type ListOutput struct {
-	Jobs map[string]struct {
-		Name          string `json:"Job_Name"`
-		State         string `json:"job_state"`
-		Queue         string `json:"queue"`
-		ExecHosts     string `json:"exec_host"`
-		ResourcesUsed struct {
-			CPUTime string `json:"cput"`
-		} `json:"resources_used"`
-	} `json:"Jobs"`
-}
-
-func query() (*ListOutput, error) {
-	cmd := exec.Command("qstat", "-f", "-F", "json")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("exectute command: %w", err)
-	}
-
-	listOutput := &ListOutput{}
-
-	err = json.Unmarshal(out, listOutput)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshal JSON: %w", err)
-	}
-	return listOutput, nil
-}
-
-func showTable(listOutput *ListOutput) error {
+func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "ID", "State", "Queue", "Time", "Nodes"})
 
-	for jobID, job := range listOutput.Jobs {
+	for _, job := range jobList {
+		timePercentage := int(100 * job.CPUTime.Seconds() / job.Walltime.Seconds())
 		table.Append([]string{
 			job.Name,
-			jobID,
+			job.ID,
 			job.State,
 			job.Queue,
-			job.ResourcesUsed.CPUTime,
-			job.ExecHosts,
+			fmt.Sprintf("%s (%d%%)", job.CPUTime, timePercentage),
+			strings.Join(job.Nodes, ", "),
 		})
 	}
 	table.Render()
@@ -61,7 +33,12 @@ func list() error {
 		return fmt.Errorf("query list: %w", err)
 	}
 
-	if err := showTable(listOutput); err != nil {
+	jobList, err := listOutputToJobList(listOutput)
+	if err != nil {
+		return fmt.Errorf("convert to job list: %w", err)
+	}
+
+	if err := showTable(jobList); err != nil {
 		return fmt.Errorf("query list: %w", err)
 	}
 
