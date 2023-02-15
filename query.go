@@ -14,6 +14,8 @@ type ListOutput struct {
 		State         string `json:"job_state"`
 		Queue         string `json:"queue"`
 		ExecHosts     string `json:"exec_host"`
+		ErrorPath     string `json:"Error_Path"`
+		OutputPath    string `json:"Output_Path"`
 		ResourcesUsed struct {
 			CPUTime  string `json:"cput"`
 			Walltime string `json:"walltime"`
@@ -71,6 +73,8 @@ type Job struct {
 	CPUTime           time.Duration
 	Walltime          time.Duration
 	RequestedWalltime time.Duration
+	OutputFile        string
+	ErrorFile         string
 }
 
 func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
@@ -109,6 +113,8 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 			CPUTime:           cpuTime,
 			Walltime:          walltime,
 			RequestedWalltime: requestedWalltime,
+			OutputFile:        strings.Split(listedJob.OutputPath, ":")[1],
+			ErrorFile:         strings.Split(listedJob.ErrorPath, ":")[1],
 		}
 		jobs = append(jobs, job)
 	}

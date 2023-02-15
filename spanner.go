@@ -24,6 +24,12 @@ func run() error {
 		if err := ssh(jobName, nodeID); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
+	case "logs":
+		jobName := flag.Arg(1)
+		outputType := flag.Arg(2)
+		if err := logs(jobName, outputType); err != nil {
+			return fmt.Errorf("list error: %w", err)
+		}
 	}
 
 	return nil
