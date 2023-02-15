@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -11,6 +12,10 @@ import (
 func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "ID", "State", "Queue", "Time", "Nodes"})
+
+	sort.Slice(jobList, func(i, j int) bool {
+		return jobList[i].Name < jobList[j].Name
+	})
 
 	for _, job := range jobList {
 		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
