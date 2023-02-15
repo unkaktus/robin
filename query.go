@@ -15,7 +15,8 @@ type ListOutput struct {
 		Queue         string `json:"queue"`
 		ExecHosts     string `json:"exec_host"`
 		ResourcesUsed struct {
-			CPUTime string `json:"cput"`
+			CPUTime  string `json:"cput"`
+			Walltime string `json:"walltime"`
 		} `json:"resources_used"`
 		ResourceList struct {
 			Walltime string `json:"walltime"`
@@ -62,13 +63,14 @@ func parseNodeList(s string) ([]string, error) {
 }
 
 type Job struct {
-	Name     string
-	ID       string
-	Queue    string
-	State    string
-	Nodes    []string
-	CPUTime  time.Duration
-	Walltime time.Duration
+	Name              string
+	ID                string
+	Queue             string
+	State             string
+	Nodes             []string
+	CPUTime           time.Duration
+	Walltime          time.Duration
+	RequestedWalltime time.Duration
 }
 
 func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
@@ -85,19 +87,28 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 				return nil, fmt.Errorf("parsing CPUTime: %w", err)
 			}
 		}
-		walltime, err := clockDuration(listedJob.ResourceList.Walltime)
+		var walltime time.Duration
+		if listedJob.ResourcesUsed.Walltime != "" {
+			walltime, err = clockDuration(listedJob.ResourcesUsed.Walltime)
+			if err != nil {
+				return nil, fmt.Errorf("parsing Walltime: %w", err)
+			}
+		}
+
+		requestedWalltime, err := clockDuration(listedJob.ResourceList.Walltime)
 		if err != nil {
-			return nil, fmt.Errorf("parsing Walltime: %w", err)
+			return nil, fmt.Errorf("parsing RequestedWalltime: %w", err)
 		}
 
 		job := Job{
-			Name:     listedJob.Name,
-			ID:       jobID,
-			Queue:    listedJob.Queue,
-			State:    listedJob.State,
-			Nodes:    nodes,
-			CPUTime:  cpuTime,
-			Walltime: walltime,
+			Name:              listedJob.Name,
+			ID:                jobID,
+			Queue:             listedJob.Queue,
+			State:             listedJob.State,
+			Nodes:             nodes,
+			CPUTime:           cpuTime,
+			Walltime:          walltime,
+			RequestedWalltime: requestedWalltime,
 		}
 		jobs = append(jobs, job)
 	}

@@ -13,13 +13,13 @@ func showTable(jobList []Job) error {
 	table.SetHeader([]string{"Name", "ID", "State", "Queue", "Time", "Nodes"})
 
 	for _, job := range jobList {
-		timePercentage := int(100 * job.CPUTime.Seconds() / job.Walltime.Seconds())
+		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
 		table.Append([]string{
 			job.Name,
 			job.ID,
 			job.State,
 			job.Queue,
-			fmt.Sprintf("%s/%s (%d%%)", job.CPUTime, job.Walltime, timePercentage),
+			fmt.Sprintf("%s/%s (%d%%)", job.Walltime, job.RequestedWalltime, timePercentage),
 			strings.Join(job.Nodes, ", "),
 		})
 	}
