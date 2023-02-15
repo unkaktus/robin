@@ -28,7 +28,12 @@ func run() error {
 		jobName := flag.Arg(1)
 		outputType := flag.Arg(2)
 		if err := logs(jobName, outputType); err != nil {
-			return fmt.Errorf("list error: %w", err)
+			return fmt.Errorf("logs error: %w", err)
+		}
+	case "cancel":
+		jobName := flag.Arg(1)
+		if err := cancel(jobName); err != nil {
+			return fmt.Errorf("cancel error: %w", err)
 		}
 	}
 
