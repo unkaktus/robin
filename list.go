@@ -27,15 +27,23 @@ func showTable(jobList []Job) error {
 	return nil
 }
 
-func list() error {
+func listJobs() ([]Job, error) {
 	listOutput, err := query()
 	if err != nil {
-		return fmt.Errorf("query list: %w", err)
+		return nil, fmt.Errorf("query list: %w", err)
 	}
 
 	jobList, err := listOutputToJobList(listOutput)
 	if err != nil {
-		return fmt.Errorf("convert to job list: %w", err)
+		return nil, fmt.Errorf("convert to job list: %w", err)
+	}
+	return jobList, nil
+}
+
+func list() error {
+	jobList, err := listJobs()
+	if err != nil {
+		return fmt.Errorf("query  job list: %w", err)
 	}
 
 	if err := showTable(jobList); err != nil {

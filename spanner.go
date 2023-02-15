@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 )
 
 func run() error {
@@ -12,6 +13,15 @@ func run() error {
 	switch command {
 	case "list":
 		if err := list(); err != nil {
+			return fmt.Errorf("list error: %w", err)
+		}
+	case "ssh":
+		jobName := flag.Arg(1)
+		nodeID, err := strconv.Atoi(flag.Arg(2))
+		if err != nil {
+			return fmt.Errorf("node ID must be an integer")
+		}
+		if err := ssh(jobName, nodeID); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
 	}
