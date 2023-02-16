@@ -13,10 +13,6 @@ func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes", "MPI"})
 
-	sort.Slice(jobList, func(i, j int) bool {
-		return jobList[i].Name < jobList[j].Name
-	})
-
 	for _, job := range jobList {
 		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
 		table.Append([]string{
@@ -50,6 +46,10 @@ func list() error {
 	if err != nil {
 		return fmt.Errorf("query  job list: %w", err)
 	}
+
+	sort.Slice(jobList, func(i, j int) bool {
+		return jobList[i].Name < jobList[j].Name
+	})
 
 	if err := showTable(jobList); err != nil {
 		return fmt.Errorf("query list: %w", err)

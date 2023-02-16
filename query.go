@@ -30,7 +30,7 @@ type ListOutput struct {
 }
 
 func query() (*ListOutput, error) {
-	cmd := exec.Command("qstat", "-f", "-F", "json")
+	cmd := exec.Command("qstat", "-xf", "-F", "json")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("exectute command: %w", err)
