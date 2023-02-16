@@ -43,6 +43,14 @@ func run() error {
 		if err := cancel(jobName); err != nil {
 			return fmt.Errorf("cancel error: %w", err)
 		}
+	case "clear":
+		target := flag.Arg(1)
+		if target != "history" {
+			break
+		}
+		if err := clearHistory(); err != nil {
+			return fmt.Errorf("clear hisory error: %w", err)
+		}
 	}
 
 	return nil
