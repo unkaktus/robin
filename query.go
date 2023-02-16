@@ -13,6 +13,7 @@ type ListOutput struct {
 		Name          string `json:"Job_Name"`
 		State         string `json:"job_state"`
 		Queue         string `json:"queue"`
+		CreationTime  string `json:"ctime"`
 		ExecHosts     string `json:"exec_host"`
 		ErrorPath     string `json:"Error_Path"`
 		OutputPath    string `json:"Output_Path"`
@@ -73,6 +74,7 @@ type Job struct {
 	ID                string
 	Queue             string
 	State             string
+	CreationTime      time.Time
 	Nodes             []string
 	NodeNumber        int
 	CPUNumber         int
@@ -86,6 +88,14 @@ type Job struct {
 
 func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 	for jobID, listedJob := range listOutput.Jobs {
+		var creationTime time.Time
+		if listedJob.CreationTime != "" {
+			creationTime, err = time.Parse(time.ANSIC, listedJob.CreationTime)
+			if err != nil {
+				return nil, fmt.Errorf("parsing creation time: %w", err)
+			}
+		}
+
 		nodes, err := parseNodeList(listedJob.ExecHosts)
 		if err != nil {
 			return nil, fmt.Errorf("parsing node list: %w", err)
@@ -116,6 +126,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 			ID:                jobID,
 			Queue:             listedJob.Queue,
 			State:             listedJob.State,
+			CreationTime:      creationTime,
 			Nodes:             nodes,
 			NodeNumber:        listedJob.ResourceList.NodeNumber,
 			CPUNumber:         listedJob.ResourceList.CPUNumber,

@@ -47,6 +47,23 @@ func list() error {
 		return fmt.Errorf("query  job list: %w", err)
 	}
 
+	jobMap := map[string]Job{}
+	for _, job := range jobList {
+		addedJob, ok := jobMap[job.Name]
+		if ok {
+			if job.CreationTime.After(addedJob.CreationTime) {
+				jobMap[job.Name] = job
+			}
+		} else {
+			jobMap[job.Name] = job
+		}
+	}
+
+	jobList = []Job{}
+	for _, job := range jobMap {
+		jobList = append(jobList, job)
+	}
+
 	sort.Slice(jobList, func(i, j int) bool {
 		return jobList[i].Name < jobList[j].Name
 	})
