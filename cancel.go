@@ -16,7 +16,7 @@ func cancel(jobName string) error {
 	for _, job := range jobList {
 		if job.Name == jobName {
 			found = true
-			cmd := exec.Command("qdel", job.ID)
+			cmd := exec.Command("qdel", "-x", job.ID)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -24,7 +24,6 @@ func cancel(jobName string) error {
 				return fmt.Errorf("execute qdel: %w", err)
 			}
 			log.Printf("cancelled %s (%s)", job.Name, job.ID)
-			break
 		}
 	}
 	if !found {
