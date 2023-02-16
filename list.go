@@ -41,7 +41,7 @@ func listJobs() ([]Job, error) {
 	return jobList, nil
 }
 
-func list() error {
+func list(state string) error {
 	jobList, err := listJobs()
 	if err != nil {
 		return fmt.Errorf("query  job list: %w", err)
@@ -61,6 +61,10 @@ func list() error {
 
 	jobList = []Job{}
 	for _, job := range jobMap {
+		// Skip the job with other states
+		if state != "" && job.State != state {
+			continue
+		}
 		jobList = append(jobList, job)
 	}
 

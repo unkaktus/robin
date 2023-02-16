@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func run() error {
@@ -12,7 +13,8 @@ func run() error {
 	command := flag.Arg(0)
 	switch command {
 	case "list":
-		if err := list(); err != nil {
+		state := strings.ToUpper(flag.Arg(1))
+		if err := list(state); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
 	case "ssh":
