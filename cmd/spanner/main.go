@@ -3,18 +3,31 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
+
+	"github.com/unkaktus/spanner"
+	"github.com/unkaktus/spanner/batchsystem/pbs"
 )
 
 func run() error {
 	flag.Parse()
 
+	var bs spanner.BatchSystem
+
+	switch spanner.DetectBatchSystem() {
+	case spanner.BatchPBS:
+		bs = &pbs.PBS{}
+	default:
+		return fmt.Errorf("unsupported batch system")
+	}
+
 	command := flag.Arg(0)
 	switch command {
 	case "list":
 		state := strings.ToUpper(flag.Arg(1))
-		if err := list(state); err != nil {
+		if err := spanner.ListJobs(bs, state); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
 	case "ssh":
@@ -23,24 +36,24 @@ func run() error {
 		if err != nil {
 			return fmt.Errorf("node ID must be an integer")
 		}
-		if err := ssh(jobName, nodeID); err != nil {
+		if err := bs.SSH(jobName, nodeID); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
 	case "logs":
 		jobName := flag.Arg(1)
 		outputType := flag.Arg(2)
-		if err := logs(jobName, outputType); err != nil {
+		if err := bs.Logs(jobName, outputType); err != nil {
 			return fmt.Errorf("logs error: %w", err)
 		}
 	case "logtail":
 		jobName := flag.Arg(1)
 		outputType := flag.Arg(2)
-		if err := logtail(jobName, outputType); err != nil {
+		if err := bs.Logtail(jobName, outputType); err != nil {
 			return fmt.Errorf("logs error: %w", err)
 		}
 	case "cancel":
 		jobName := flag.Arg(1)
-		if err := cancel(jobName); err != nil {
+		if err := bs.Cancel(jobName); err != nil {
 			return fmt.Errorf("cancel error: %w", err)
 		}
 	case "clear":
@@ -48,10 +61,16 @@ func run() error {
 		if target != "history" {
 			break
 		}
-		if err := clearHistory(); err != nil {
+		if err := bs.ClearHistory(); err != nil {
 			return fmt.Errorf("clear hisory error: %w", err)
 		}
 	}
 
 	return nil
+}
+
+func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
 }

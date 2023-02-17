@@ -1,4 +1,4 @@
-package main
+package pbs
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"os/exec"
 )
 
-func ssh(jobName string, nodeID int) error {
-	jobList, err := listJobs()
+func (b *PBS) SSH(jobName string, nodeID int) error {
+	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}

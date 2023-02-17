@@ -1,4 +1,4 @@
-package main
+package pbs
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"os/exec"
 )
 
-func cancel(jobName string) error {
-	jobList, err := listJobs()
+func (b *PBS) Cancel(jobName string) error {
+	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}

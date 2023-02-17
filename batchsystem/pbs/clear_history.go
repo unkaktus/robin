@@ -1,4 +1,4 @@
-package main
+package pbs
 
 import (
 	"fmt"
@@ -17,8 +17,8 @@ func wipeJob(jobID string) error {
 	return nil
 }
 
-func clearHistory() error {
-	jobList, err := listJobs()
+func (b *PBS) ClearHistory() error {
+	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("query  job list: %w", err)
 	}

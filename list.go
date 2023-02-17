@@ -1,4 +1,4 @@
-package main
+package spanner
 
 import (
 	"fmt"
@@ -28,21 +28,8 @@ func showTable(jobList []Job) error {
 	return nil
 }
 
-func listJobs() ([]Job, error) {
-	listOutput, err := query()
-	if err != nil {
-		return nil, fmt.Errorf("query list: %w", err)
-	}
-
-	jobList, err := listOutputToJobList(listOutput)
-	if err != nil {
-		return nil, fmt.Errorf("convert to job list: %w", err)
-	}
-	return jobList, nil
-}
-
-func list(state string) error {
-	jobList, err := listJobs()
+func ListJobs(bs BatchSystem, state string) error {
+	jobList, err := bs.ListJobs()
 	if err != nil {
 		return fmt.Errorf("query  job list: %w", err)
 	}

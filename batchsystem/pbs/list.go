@@ -1,4 +1,4 @@
-package main
+package pbs
 
 import (
 	"encoding/json"
@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/unkaktus/spanner"
 )
 
 type ListOutput struct {
@@ -69,24 +71,7 @@ func parseNodeList(s string) ([]string, error) {
 	return nodes, nil
 }
 
-type Job struct {
-	Name              string
-	ID                string
-	Queue             string
-	State             string
-	CreationTime      time.Time
-	Nodes             []string
-	NodeNumber        int
-	CPUNumber         int
-	MPIProcessNumber  int
-	CPUTime           time.Duration
-	Walltime          time.Duration
-	RequestedWalltime time.Duration
-	OutputFile        string
-	ErrorFile         string
-}
-
-func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
+func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error) {
 	for jobID, listedJob := range listOutput.Jobs {
 		var creationTime time.Time
 		if listedJob.CreationTime != "" {
@@ -121,7 +106,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 			return nil, fmt.Errorf("parsing RequestedWalltime: %w", err)
 		}
 
-		job := Job{
+		job := spanner.Job{
 			Name:              listedJob.Name,
 			ID:                jobID,
 			Queue:             listedJob.Queue,
@@ -140,4 +125,17 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []Job, err error) {
 		jobs = append(jobs, job)
 	}
 	return jobs, nil
+}
+
+func (b *PBS) ListJobs() ([]spanner.Job, error) {
+	listOutput, err := query()
+	if err != nil {
+		return nil, fmt.Errorf("query list: %w", err)
+	}
+
+	jobList, err := listOutputToJobList(listOutput)
+	if err != nil {
+		return nil, fmt.Errorf("convert to job list: %w", err)
+	}
+	return jobList, nil
 }

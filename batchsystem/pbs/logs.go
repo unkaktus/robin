@@ -1,4 +1,4 @@
-package main
+package pbs
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"os/exec"
 )
 
-func logs(jobName string, outputType string) error {
-	jobList, err := listJobs()
+func (b *PBS) Logs(jobName string, outputType string) error {
+	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}
@@ -30,8 +30,8 @@ func logs(jobName string, outputType string) error {
 	return nil
 }
 
-func logtail(jobName string, outputType string) error {
-	jobList, err := listJobs()
+func (b *PBS) Logtail(jobName string, outputType string) error {
+	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}
