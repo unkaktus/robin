@@ -31,7 +31,7 @@ func showTable(jobList []Job) error {
 func ListJobs(bs BatchSystem, state string) error {
 	jobList, err := bs.ListJobs()
 	if err != nil {
-		return fmt.Errorf("query  job list: %w", err)
+		return fmt.Errorf("query job list: %w", err)
 	}
 
 	jobMap := map[string]Job{}

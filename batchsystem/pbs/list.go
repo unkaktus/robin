@@ -137,5 +137,11 @@ func (b *PBS) ListJobs() ([]spanner.Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("convert to job list: %w", err)
 	}
+
+	err = b.clearInvisibleJobs(jobList)
+	if err != nil {
+		return nil, fmt.Errorf("clear invisible jobs: %w", err)
+	}
+
 	return jobList, nil
 }

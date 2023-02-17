@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/unkaktus/spanner"
 )
 
 func wipeJob(jobID string) error {
@@ -32,5 +34,23 @@ func (b *PBS) ClearHistory() error {
 		}
 	}
 
+	return nil
+}
+
+func (b *PBS) clearInvisibleJobs(jobList []spanner.Job) error {
+	jobMap := map[string]spanner.Job{}
+	for _, job := range jobList {
+		addedJob, ok := jobMap[job.Name]
+		if ok {
+			if job.CreationTime.After(addedJob.CreationTime) {
+				if err := wipeJob(addedJob.ID); err != nil {
+					return fmt.Errorf("wipe invisible job: %w", err)
+				}
+				jobMap[job.Name] = job
+			}
+		} else {
+			jobMap[job.Name] = job
+		}
+	}
 	return nil
 }
