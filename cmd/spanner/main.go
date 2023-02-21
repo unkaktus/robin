@@ -42,13 +42,13 @@ func run() error {
 	case "logs":
 		jobName := flag.Arg(1)
 		outputType := flag.Arg(2)
-		if err := bs.Logs(jobName, outputType); err != nil {
+		if err := spanner.Logs(bs, jobName, outputType); err != nil {
 			return fmt.Errorf("logs error: %w", err)
 		}
 	case "logtail":
 		jobName := flag.Arg(1)
 		outputType := flag.Arg(2)
-		if err := bs.Logtail(jobName, outputType); err != nil {
+		if err := spanner.Logtail(bs, jobName, outputType); err != nil {
 			return fmt.Errorf("logs error: %w", err)
 		}
 	case "cancel":

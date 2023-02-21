@@ -25,8 +25,6 @@ type BatchSystem interface {
 	ListJobs() ([]Job, error)
 	SSH(jobName string, nodeID int) error
 	ClearHistory() error
-	Logs(jobName string, outputType string) error
-	Logtail(jobName string, outputType string) error
 	Cancel(jobName string) error
 }
 

@@ -1,4 +1,4 @@
-package pbs
+package spanner
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-func (b *PBS) Logs(jobName string, outputType string) error {
+func Logs(b BatchSystem, jobName string, outputType string) error {
 	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
@@ -30,7 +30,7 @@ func (b *PBS) Logs(jobName string, outputType string) error {
 	return nil
 }
 
-func (b *PBS) Logtail(jobName string, outputType string) error {
+func Logtail(b BatchSystem, jobName string, outputType string) error {
 	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
