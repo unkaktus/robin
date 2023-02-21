@@ -16,12 +16,12 @@ func (b *PBS) Cancel(jobName string) error {
 	for _, job := range jobList {
 		if job.Name == jobName {
 			found = true
-			cmd := exec.Command("qdel", "-x", job.ID)
+			cmd := exec.Command("qsig", "-s", "SIGTERM", job.ID)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("execute qdel: %w", err)
+				return fmt.Errorf("execute qsig: %w", err)
 			}
 			log.Printf("cancelled %s (%s)", job.Name, job.ID)
 		}
