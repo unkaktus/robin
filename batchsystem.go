@@ -35,6 +35,7 @@ type Job struct {
 	ID                string
 	Queue             string
 	State             string
+	ExitCode          int
 	CreationTime      time.Time
 	Nodes             []string
 	NodeNumber        int

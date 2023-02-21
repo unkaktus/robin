@@ -19,6 +19,7 @@ type ListOutput struct {
 		ExecHosts     string `json:"exec_host"`
 		ErrorPath     string `json:"Error_Path"`
 		OutputPath    string `json:"Output_Path"`
+		ExitStatus    int    `json:"Exit_status"`
 		ResourcesUsed struct {
 			CPUTime  string `json:"cput"`
 			Walltime string `json:"walltime"`
@@ -111,6 +112,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 			ID:                jobID,
 			Queue:             listedJob.Queue,
 			State:             listedJob.State,
+			ExitCode:          listedJob.ExitStatus,
 			CreationTime:      creationTime,
 			Nodes:             nodes,
 			NodeNumber:        listedJob.ResourceList.NodeNumber,

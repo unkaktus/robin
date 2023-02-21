@@ -17,7 +17,7 @@ func showTable(jobList []Job) error {
 		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
 		table.Append([]string{
 			job.Name,
-			job.State,
+			fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
 			job.Queue,
 			fmt.Sprintf("%s/%s (%d%%)", job.Walltime, job.RequestedWalltime, timePercentage),
 			strconv.Itoa(job.NodeNumber),
