@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"os/user"
 	"strconv"
 	"strings"
 	"time"
@@ -75,6 +76,10 @@ func UnmashalSqueueOutput(data []byte) (ListedJob, error) {
 }
 
 func query() ([]ListedJob, error) {
+	currentUser, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("get current user: %w", err)
+	}
 	req := []string{
 		"Name",
 		"JobID",
@@ -89,7 +94,7 @@ func query() ([]ListedJob, error) {
 		"STDOUT",
 		"STDERR",
 	}
-	cmd := exec.Command("squeue", "--noheader", "-O", SqueueRequestString(req))
+	cmd := exec.Command("squeue", "--noheader", "-u", currentUser.Uid, "-O", SqueueRequestString(req))
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("exectute command: %w", err)
