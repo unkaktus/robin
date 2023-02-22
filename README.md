@@ -1,6 +1,6 @@
 ## 🔧 spanner 🔧
 
-`spanner` is a tool for easy managment of job on HPC like refencing by name, logging, ssh to nodes.
+`spanner` is a tool for easy job managment on HPC like referencing by name, logging,  ssh-ing to nodes.
 
 Works across Slurm and PBSPro.
 
