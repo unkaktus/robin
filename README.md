@@ -2,7 +2,7 @@
 
 `spanner` is a tool for easy managment of job on HPC like refencing by name, logging, ssh to nodes.
 
-For now, supports only PBSPro. Slurm support in underway.
+Works across Slurm and PBSPro.
 
 ### Building
 
