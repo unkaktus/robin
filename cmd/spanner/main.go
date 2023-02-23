@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/unkaktus/spanner"
+	"github.com/unkaktus/spanner/batchsystem"
 	"github.com/unkaktus/spanner/batchsystem/pbs"
 	"github.com/unkaktus/spanner/batchsystem/slurm"
 )
@@ -17,10 +18,10 @@ func run() error {
 
 	var bs spanner.BatchSystem
 
-	switch spanner.DetectBatchSystem() {
-	case spanner.BatchPBS:
+	switch batchsystem.DetectBatchSystem() {
+	case batchsystem.BatchPBS:
 		bs = &pbs.PBS{}
-	case spanner.BatchSlurm:
+	case batchsystem.BatchSlurm:
 		bs = &slurm.Slurm{}
 	default:
 		return fmt.Errorf("unsupported batch system")

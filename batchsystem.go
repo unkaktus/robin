@@ -1,25 +1,8 @@
 package spanner
 
 import (
-	"os/exec"
 	"time"
 )
-
-const (
-	BatchPBS         = "pbs"
-	BatchSlurm       = "slurm"
-	BatchUnsupported = "unsupported"
-)
-
-func DetectBatchSystem() string {
-	if _, err := exec.LookPath("qstat"); err == nil {
-		return BatchPBS
-	}
-	if _, err := exec.LookPath("squeue"); err == nil {
-		return BatchSlurm
-	}
-	return BatchUnsupported
-}
 
 type BatchSystem interface {
 	ListJobs() ([]Job, error)
