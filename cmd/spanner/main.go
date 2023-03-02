@@ -13,7 +13,7 @@ import (
 	"github.com/unkaktus/spanner/batchsystem/slurm"
 )
 
-func run() error {
+func run() (err error) {
 	flag.Parse()
 
 	var bs spanner.BatchSystem
@@ -36,9 +36,13 @@ func run() error {
 		}
 	case "ssh":
 		jobName := flag.Arg(1)
-		nodeID, err := strconv.Atoi(flag.Arg(2))
-		if err != nil {
-			return fmt.Errorf("node ID must be an integer")
+		nodeIDString := flag.Arg(2)
+		nodeID := 0
+		if nodeIDString != "" {
+			nodeID, err = strconv.Atoi(flag.Arg(2))
+			if err != nil {
+				return fmt.Errorf("node ID must be an integer")
+			}
 		}
 		if err := bs.SSH(jobName, nodeID); err != nil {
 			return fmt.Errorf("list error: %w", err)
