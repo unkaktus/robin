@@ -159,10 +159,16 @@ func parseNodeList(nodelistString string) ([]string, error) {
 				rangeString += string(r)
 			}
 			if !insideRange {
-				// finalize bunch
+				if rangeString == "" {
+					node := prefix
+					nodelist = append(nodelist, node)
+					continue
+				}
+				// Finalize bunch
 				expandedRange := expandRangeString(rangeString)
 				for _, ers := range expandedRange {
 					node := prefix + ers + suffix
+
 					nodelist = append(nodelist, node)
 				}
 				prefix = ""
@@ -183,11 +189,16 @@ func parseNodeList(nodelistString string) ([]string, error) {
 			}
 		}
 	}
-	// finalize last bunch
-	expandedRange := expandRangeString(rangeString)
-	for _, ers := range expandedRange {
-		node := prefix + ers + suffix
+	// Finalize last bunch
+	if rangeString == "" {
+		node := prefix
 		nodelist = append(nodelist, node)
+	} else {
+		expandedRange := expandRangeString(rangeString)
+		for _, ers := range expandedRange {
+			node := prefix + ers + suffix
+			nodelist = append(nodelist, node)
+		}
 	}
 
 	return nodelist, nil
@@ -229,7 +240,6 @@ func clockDuration(clock string) (d time.Duration, err error) {
 	d += time.Duration(days) * 24 * time.Hour
 	return d, nil
 }
-
 func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error) {
 	for _, listedJob := range listedJobs {
 		exitCode, err := strconv.Atoi(listedJob.ExitCode)
