@@ -9,6 +9,7 @@ import (
 )
 
 type Variables struct {
+	ConfigFilename  string
 	TaskID          int
 	TotalTaskNumber int
 }

@@ -2,6 +2,9 @@ package spanner
 
 import (
 	"time"
+
+	"github.com/unkaktus/spanner/batchsystem"
+	"github.com/unkaktus/spanner/tent"
 )
 
 type BatchSystem interface {
@@ -9,6 +12,8 @@ type BatchSystem interface {
 	SSH(jobName string, nodeID int) error
 	ClearHistory() error
 	Cancel(jobName string) error
+	TentVariables() tent.Variables
+	JobData(batchsystem.Job) (string, error)
 }
 
 type Job struct {

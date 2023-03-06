@@ -34,6 +34,15 @@ func run() (err error) {
 		if err := spanner.ListJobs(bs, state); err != nil {
 			return fmt.Errorf("list error: %w", err)
 		}
+	case "tent":
+		cmdline := flag.Args()[1:]
+		if err := spanner.Tent(bs, cmdline); err != nil {
+			return fmt.Errorf("tent: %w", err)
+		}
+	case "begin":
+		if err := spanner.Begin(bs, "begin.toml", flag.Arg(1)); err != nil {
+			return fmt.Errorf("begin: %w", err)
+		}
 	case "ssh":
 		jobName := flag.Arg(1)
 		nodeIDString := flag.Arg(2)
