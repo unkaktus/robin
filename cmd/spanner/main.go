@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -90,6 +91,22 @@ func run() (err error) {
 					configFilename := cCtx.Args().Get(0)
 					if err := spanner.Begin(bs, cCtx.String("f"), configFilename); err != nil {
 						return fmt.Errorf("begin: %w", err)
+					}
+					return nil
+				},
+			},
+			{
+				Name:  "submit",
+				Usage: "submit a job file without magic",
+
+				Action: func(cCtx *cli.Context) error {
+					jobDataFilename := cCtx.Args().First()
+					jobData, err := ioutil.ReadFile(jobDataFilename)
+					if err != nil {
+						return fmt.Errorf("read job data file: %w", err)
+					}
+					if err := bs.Submit(string(jobData)); err != nil {
+						return fmt.Errorf("submit: %w", err)
 					}
 					return nil
 				},

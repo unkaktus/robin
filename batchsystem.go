@@ -14,6 +14,7 @@ type BatchSystem interface {
 	Cancel(jobName string) error
 	TentVariables() tent.Variables
 	JobData(batchsystem.Job) (string, error)
+	Submit(jobData string) error
 }
 
 type Job struct {
