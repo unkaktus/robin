@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 func Logs(b BatchSystem, jobName string, outputType string) error {
@@ -30,7 +31,7 @@ func Logs(b BatchSystem, jobName string, outputType string) error {
 	return nil
 }
 
-func Logtail(b BatchSystem, jobName string, outputType string) error {
+func Logtail(b BatchSystem, jobName, outputType string, nLines int) error {
 	jobList, err := b.ListJobs()
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
@@ -41,7 +42,7 @@ func Logtail(b BatchSystem, jobName string, outputType string) error {
 			if outputType == "err" {
 				logFile = job.ErrorFile
 			}
-			cmd := exec.Command("tail", "-n", "128", "-f", logFile)
+			cmd := exec.Command("tail", "-n", strconv.Itoa(nLines), "-f", logFile)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
