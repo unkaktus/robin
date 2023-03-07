@@ -77,19 +77,23 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:    "begin",
-				Aliases: []string{"start"},
-				Usage:   "begin a job",
+				Name:  "begin",
+				Usage: "begin a job",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "f",
 						Value: "begin.toml",
 						Usage: "path to begin.toml file",
 					},
+					&cli.BoolFlag{
+						Name:  "dry",
+						Value: false,
+						Usage: "dry run: print the job data only, do not submit",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					configFilename := cCtx.Args().Get(0)
-					if err := spanner.Begin(bs, cCtx.String("f"), configFilename); err != nil {
+					if err := spanner.Begin(bs, cCtx.String("f"), configFilename, cCtx.Bool("dry")); err != nil {
 						return fmt.Errorf("begin: %w", err)
 					}
 					return nil

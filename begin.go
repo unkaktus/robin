@@ -9,7 +9,7 @@ import (
 	"github.com/unkaktus/spanner/begin"
 )
 
-func Begin(b BatchSystem, beginFilename, configFilename string) error {
+func Begin(b BatchSystem, beginFilename, configFilename string, dryRun bool) error {
 	beginfile, err := begin.ParseBeginfile(beginFilename)
 	if err != nil {
 		return fmt.Errorf("parse beginfile: %w", err)
@@ -51,7 +51,14 @@ func Begin(b BatchSystem, beginFilename, configFilename string) error {
 	if err != nil {
 		return fmt.Errorf("get job data: %w", err)
 	}
-	fmt.Printf("%s", jobData)
-	// Submit
+	if dryRun {
+		fmt.Printf("%s", jobData)
+		return nil
+	}
+
+	if err := b.Submit(jobData); err != nil {
+		return fmt.Errorf("submit job data: %w", err)
+	}
+
 	return nil
 }
