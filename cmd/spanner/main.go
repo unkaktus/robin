@@ -29,7 +29,8 @@ func run() (err error) {
 	}
 
 	app := &cli.App{
-		Name: "spanner",
+		Name:     "spanner",
+		HelpName: "one tool for all HPC",
 		Commands: []*cli.Command{
 			{
 				Name:    "list",
