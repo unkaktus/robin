@@ -14,7 +14,7 @@ git clone https://github.com/unkaktus/spanner
 cd spanner/cmd/spanner
 env GOOS=linux GOARCH=amd64 go build
 ```
-2. `scp` the `spanner` binary to your favorite supercomp and add it to `PATH`.
+2. `scp` the `spanner` binary to your favorite supercomp and add it to your `$PATH`.
 
 
 ### Example uses
@@ -26,9 +26,9 @@ $ spanner list
 +--------------------+-------+-------+----------------------+-------+------+
 |        NAME        | STATE | QUEUE |         TIME         | NODES | MPI  |
 +--------------------+-------+-------+----------------------+-------+------+
-| Compare_Apples     | R     | small | 21m30s/23h30m0s (1%) |     8 | 6/48 |
-| Compare_Oranges    | Q     | small | 0s/23h30m0s (0%)     |     8 | 6/48 |
-| Compare_Bananas    | F     | small | 0s/23h30m0s (0%)     |     8 | 6/48 |
+| Compare_Apples     | R [0] | small | 21m30s/23h30m0s (1%) |     8 | 6/48 |
+| Compare_Oranges    | Q [0] | small | 0s/23h30m0s (0%)     |     8 | 6/48 |
+| Compare_Bananas    | F [9] | small | 0s/23h30m0s (0%)     |     8 | 6/48 |
 +--------------------+-------+-------+----------------------+-------+------+
 ```
 
@@ -48,9 +48,14 @@ $ spanner logs Compare_Apples err
 Similarly, follow the log tail of a job:
 
 ```shell
-$ spanner logtail Compare_Apples
+$ spanner logs -f Compare_Apples
 ```
 
+Begin a job using `begin.toml` file and configuration file `bucket.dat` for the run:
+
+```shell
+$ spanner begin bucket.dat
+```
 
 SSH to the node 1 of running job `Compare_Apples`:
 
@@ -63,10 +68,4 @@ Cancel job `Compare_Apples`:
 
 ```shell
 $ spanner cancel Compare_Apples
-```
-
-Clear the entire job history:
-
-```shell
-$ spanner clear history
 ```
