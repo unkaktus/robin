@@ -72,6 +72,17 @@ func parseNodeList(s string) ([]string, error) {
 	return nodes, nil
 }
 
+func filePath(path string) string {
+	if path == "" {
+		return ""
+	}
+	sp := strings.Split(path, ":")
+	if len(sp) != 2 {
+		return ""
+	}
+	return sp[1]
+}
+
 func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error) {
 	for jobID, listedJob := range listOutput.Jobs {
 		var creationTime time.Time
@@ -121,8 +132,8 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 			CPUTime:           cpuTime,
 			Walltime:          walltime,
 			RequestedWalltime: requestedWalltime,
-			OutputFile:        strings.Split(listedJob.OutputPath, ":")[1],
-			ErrorFile:         strings.Split(listedJob.ErrorPath, ":")[1],
+			OutputFile:        filePath(listedJob.OutputPath),
+			ErrorFile:         filePath(listedJob.ErrorPath),
 		}
 		jobs = append(jobs, job)
 	}
