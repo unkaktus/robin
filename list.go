@@ -19,7 +19,11 @@ func showTable(jobList []Job) error {
 			job.Name,
 			fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
 			job.Queue,
-			fmt.Sprintf("%s/%s (%d%%)", job.Walltime, job.RequestedWalltime, timePercentage),
+			fmt.Sprintf("[%d%%] %s/%s",
+				timePercentage,
+				job.Walltime,
+				job.RequestedWalltime,
+			),
 			strconv.Itoa(job.NodeNumber),
 			fmt.Sprintf("%d/%d", job.MPIProcessNumber/job.NodeNumber, job.MPIProcessNumber),
 		})
