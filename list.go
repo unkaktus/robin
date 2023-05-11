@@ -69,3 +69,18 @@ func ListJobs(bs BatchSystem, state string) error {
 
 	return nil
 }
+
+func LatestJob(bs BatchSystem) (*Job, error) {
+	jobList, err := bs.ListJobs()
+	if err != nil {
+		return nil, fmt.Errorf("query job list: %w", err)
+	}
+	sort.Slice(jobList, func(i, j int) bool {
+		return jobList[i].CreationTime.After(jobList[j].CreationTime)
+	})
+	if len(jobList) == 0 {
+		return nil, fmt.Errorf("no jobs found")
+	}
+
+	return &jobList[0], nil
+}

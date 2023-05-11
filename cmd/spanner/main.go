@@ -58,10 +58,30 @@ func run() (err error) {
 						Value: 30,
 						Usage: "number of lines in the tail",
 					},
+					&cli.BoolFlag{
+						Name:  "latest",
+						Value: false,
+						Usage: "use the latest running job",
+					},
+					&cli.BoolFlag{
+						Name:  "err",
+						Value: false,
+						Usage: "output error logs",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					jobName := cCtx.Args().Get(0)
-					outputType := cCtx.Args().Get(1)
+					if cCtx.Bool("latest") {
+						job, err := spanner.LatestJob(bs)
+						if err != nil {
+							return fmt.Errorf("looking up the latest job: %w", err)
+						}
+						jobName = job.Name
+					}
+					outputType := "out"
+					if cCtx.Bool("err") {
+						outputType = "err"
+					}
 					switch cCtx.Bool("f") {
 					case false:
 						if err := spanner.Logs(bs, jobName, outputType); err != nil {
@@ -120,8 +140,22 @@ func run() (err error) {
 				Name:    "cancel",
 				Aliases: []string{"stop"},
 				Usage:   "cancel jobs",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "latest",
+						Value: false,
+						Usage: "use the latest running job",
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
 					jobName := cCtx.Args().First()
+					if cCtx.Bool("latest") {
+						job, err := spanner.LatestJob(bs)
+						if err != nil {
+							return fmt.Errorf("looking up the latest job: %w", err)
+						}
+						jobName = job.Name
+					}
 					if err := bs.Cancel(jobName); err != nil {
 						return fmt.Errorf("cancel error: %w", err)
 					}
@@ -132,8 +166,22 @@ func run() (err error) {
 				Name:    "ssh",
 				Aliases: []string{"shell"},
 				Usage:   "login into nodes",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "latest",
+						Value: false,
+						Usage: "use the latest running job",
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
 					jobName := cCtx.Args().Get(0)
+					if cCtx.Bool("latest") {
+						job, err := spanner.LatestJob(bs)
+						if err != nil {
+							return fmt.Errorf("looking up the latest job: %w", err)
+						}
+						jobName = job.Name
+					}
 					nodeIDString := cCtx.Args().Get(1)
 					nodeID := 0
 					if nodeIDString != "" {
