@@ -42,3 +42,23 @@ func TestParseNodeListNoNumber(t *testing.T) {
 	is.NoErr(err)
 	is.Equal(nodelist, []string{"nodea", "nodeb", "nodec"})
 }
+
+func TestParseExitCodePlain(t *testing.T) {
+	is := is.New(t)
+
+	exitCodeString := "2"
+	exitCode, signal, err := parseExitCode(exitCodeString)
+	is.NoErr(err)
+	is.Equal(exitCode, 2)
+	is.Equal(signal, 0)
+}
+
+func TestParseExitCodeWithSignal(t *testing.T) {
+	is := is.New(t)
+
+	exitCodeString := "4:9"
+	exitCode, signal, err := parseExitCode(exitCodeString)
+	is.NoErr(err)
+	is.Equal(exitCode, 4)
+	is.Equal(signal, 9)
+}

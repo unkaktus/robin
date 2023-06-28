@@ -241,13 +241,28 @@ func clockDuration(clock string) (d time.Duration, err error) {
 	d += time.Duration(days) * 24 * time.Hour
 	return d, nil
 }
+
+func parseExitCode(s string) (exitCode, signal int, err error) {
+	sp := strings.Split(s, ":")
+	exitCode, err = strconv.Atoi(sp[0])
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse exit code: %w", err)
+	}
+	if len(sp) > 1 {
+		signal, err = strconv.Atoi(sp[1])
+		if err != nil {
+			return 0, 0, fmt.Errorf("parse signal: %w", err)
+		}
+	}
+	return exitCode, signal, nil
+}
+
 func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error) {
 	for _, listedJob := range listedJobs {
-		exitCode, err := strconv.Atoi(listedJob.ExitCode)
+		exitCode, _, err := parseExitCode(listedJob.ExitCode)
 		if err != nil {
 			return nil, fmt.Errorf("parse exit code: %w", err)
 		}
-
 		creationTime, err := time.Parse(TimeLayout, listedJob.SubmitTime)
 		if err != nil {
 			return nil, fmt.Errorf("parse submit time: %w", err)
