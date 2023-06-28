@@ -279,11 +279,13 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error)
 		if err != nil {
 			return nil, fmt.Errorf("parse walltime: %w", err)
 		}
-		requestedWalltime, err := clockDuration(listedJob.TimeLimit)
-		if err != nil {
-			return nil, fmt.Errorf("parse requested walltime: %w", err)
+		requestedWalltime := time.Duration(0)
+		if listedJob.TimeLimit != "UNLIMITED" {
+			requestedWalltime, err = clockDuration(listedJob.TimeLimit)
+			if err != nil {
+				return nil, fmt.Errorf("parse requested walltime: %w", err)
+			}
 		}
-
 		job := spanner.Job{
 			Name:              listedJob.Name,
 			ID:                listedJob.ID,
