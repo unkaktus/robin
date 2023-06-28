@@ -162,6 +162,7 @@ func parseNodeList(nodelistString string) ([]string, error) {
 				if rangeString == "" {
 					node := prefix
 					nodelist = append(nodelist, node)
+					prefix = ""
 					continue
 				}
 				// Finalize bunch

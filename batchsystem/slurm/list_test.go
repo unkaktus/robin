@@ -24,3 +24,21 @@ func TestParseNodeListSingle(t *testing.T) {
 	is.NoErr(err)
 	is.Equal(nodelist, []string{"node107"})
 }
+
+func TestParseNodeListSingleNoNumber(t *testing.T) {
+	is := is.New(t)
+
+	nodelistString := "node"
+	nodelist, err := parseNodeList(nodelistString)
+	is.NoErr(err)
+	is.Equal(nodelist, []string{"node"})
+}
+
+func TestParseNodeListNoNumber(t *testing.T) {
+	is := is.New(t)
+
+	nodelistString := "nodea,nodeb,nodec"
+	nodelist, err := parseNodeList(nodelistString)
+	is.NoErr(err)
+	is.Equal(nodelist, []string{"nodea", "nodeb", "nodec"})
+}
