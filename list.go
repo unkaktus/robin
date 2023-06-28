@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/olekukonko/tablewriter"
 )
@@ -14,16 +15,23 @@ func showTable(jobList []Job) error {
 	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes", "MPI"})
 
 	for _, job := range jobList {
-		timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
+		timeString := ""
+		if job.RequestedWalltime == time.Duration(0) {
+			timeString = job.Walltime.String()
+		} else {
+			timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
+			timeString = fmt.Sprintf("[%d%%] %s/%s",
+				timePercentage,
+				job.Walltime,
+				job.RequestedWalltime,
+			)
+		}
+
 		table.Append([]string{
 			job.Name,
 			fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
 			job.Queue,
-			fmt.Sprintf("[%d%%] %s/%s",
-				timePercentage,
-				job.Walltime,
-				job.RequestedWalltime,
-			),
+			timeString,
 			strconv.Itoa(job.NodeNumber),
 			fmt.Sprintf("%d/%d", job.MPIProcessNumber/job.NodeNumber, job.MPIProcessNumber),
 		})
