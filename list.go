@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/unkaktus/tablewriter"
 )
 
 func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
+	table.SetRoundedStyle()
 	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes", "MPI"})
 
 	for _, job := range jobList {
