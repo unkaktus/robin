@@ -38,6 +38,8 @@ func Begin(b BatchSystem, beginFilename, configFilename string, dryRun bool) err
 		Nodes:            beginfile.Nodes,
 		TasksPerNode:     beginfile.TasksPerNode,
 		NodeType:         beginfile.NodeType,
+		Partition:        beginfile.Partition,
+		Account:          beginfile.Account,
 		Walltime:         begin.FormatDuration(beginfile.Walltime),
 		Email:            beginfile.Email,
 		WorkingDirectory: beginfile.WorkingDirectory,

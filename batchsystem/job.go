@@ -13,9 +13,11 @@ type Job struct {
 	Nodes        int
 	TasksPerNode int
 
-	NodeType string
-	Walltime string
-	Email    string
+	NodeType  string
+	Partition string
+	Account   string
+	Walltime  string
+	Email     string
 
 	WorkingDirectory string
 	OutputFile       string

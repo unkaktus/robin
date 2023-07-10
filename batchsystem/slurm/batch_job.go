@@ -12,6 +12,8 @@ func (b *Slurm) JobData(job batchsystem.Job) (string, error) {
 #SBATCH -J {{.Name}}
 #SBATCH -o {{.OutputFile}}
 #SBATCH -e {{.ErrorFile}}
+{{ if ne .Account ""}}#SBATCH --account={{.Account}}{{end}}
+{{ if ne .Partition ""}}#SBATCH --partition={{.Partition}}{{end}}
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user={{.Email}}
 #SBATCH --nodes {{.Nodes}}

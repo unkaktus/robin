@@ -13,9 +13,11 @@ type Beginfile struct {
 	Nodes        int
 	TasksPerNode int
 
-	NodeType string
-	Walltime time.Duration
-	Email    string
+	NodeType  string
+	Partition string
+	Account   string
+	Walltime  time.Duration
+	Email     string
 
 	WorkingDirectory string
 
