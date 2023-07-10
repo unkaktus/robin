@@ -19,7 +19,10 @@ func Begin(b BatchSystem, beginFilename, configFilename string, dryRun bool) err
 		filepath.Ext(configFilename),
 	)
 
-	name := beginfile.Name + "_" + configName
+	name := beginfile.Name
+	if configName != "." {
+		name += "_" + configName
+	}
 
 	outputFile := filepath.Join(
 		beginfile.WorkingDirectory,
