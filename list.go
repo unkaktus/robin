@@ -41,8 +41,8 @@ func showTable(jobList []Job) error {
 	return nil
 }
 
-func ListJobs(bs BatchSystem, state string) error {
-	jobList, err := bs.ListJobs()
+func ListJobs(bs BatchSystem, all bool, state string) error {
+	jobList, err := bs.ListJobs(all)
 	if err != nil {
 		return fmt.Errorf("query job list: %w", err)
 	}
@@ -80,7 +80,7 @@ func ListJobs(bs BatchSystem, state string) error {
 }
 
 func LatestJob(bs BatchSystem) (*Job, error) {
-	jobList, err := bs.ListJobs()
+	jobList, err := bs.ListJobs(false)
 	if err != nil {
 		return nil, fmt.Errorf("query job list: %w", err)
 	}

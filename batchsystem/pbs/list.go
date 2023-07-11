@@ -140,7 +140,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 	return jobs, nil
 }
 
-func (b *PBS) ListJobs() ([]spanner.Job, error) {
+func (b *PBS) ListJobs(all bool) ([]spanner.Job, error) {
 	listOutput, err := query()
 	if err != nil {
 		return nil, fmt.Errorf("query list: %w", err)

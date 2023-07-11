@@ -8,7 +8,7 @@ import (
 )
 
 type BatchSystem interface {
-	ListJobs() ([]Job, error)
+	ListJobs(all bool) ([]Job, error)
 	SSH(jobName string, nodeID int) error
 	ClearHistory() error
 	Cancel(jobName string) error

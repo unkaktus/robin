@@ -8,7 +8,7 @@ import (
 )
 
 func Logs(b BatchSystem, jobName string, outputType string) error {
-	jobList, err := b.ListJobs()
+	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}
@@ -32,7 +32,7 @@ func Logs(b BatchSystem, jobName string, outputType string) error {
 }
 
 func Logtail(b BatchSystem, jobName, outputType string, nLines int) error {
-	jobList, err := b.ListJobs()
+	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}

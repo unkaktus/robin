@@ -20,7 +20,7 @@ func wipeJob(jobID string) error {
 }
 
 func (b *PBS) ClearHistory() error {
-	jobList, err := b.ListJobs()
+	jobList, err := b.ListJobs(false)
 	if err != nil {
 		return fmt.Errorf("query  job list: %w", err)
 	}

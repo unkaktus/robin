@@ -7,7 +7,7 @@ import (
 )
 
 func (b *PBS) SSH(jobName string, nodeID int) error {
-	jobList, err := b.ListJobs()
+	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}

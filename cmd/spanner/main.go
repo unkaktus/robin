@@ -36,9 +36,17 @@ func run() (err error) {
 				Name:    "list",
 				Aliases: []string{"ls"},
 				Usage:   "list jobs",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "all",
+						Value: false,
+						Usage: "include jobs of other users",
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
+					all := cCtx.Bool("all")
 					state := strings.ToUpper(flag.Arg(1))
-					if err := spanner.ListJobs(bs, state); err != nil {
+					if err := spanner.ListJobs(bs, all, state); err != nil {
 						return fmt.Errorf("list error: %w", err)
 					}
 					return nil

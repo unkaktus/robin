@@ -75,7 +75,7 @@ func UnmashalSqueueOutput(data []byte) (ListedJob, error) {
 	return listedJob, nil
 }
 
-func query() ([]ListedJob, error) {
+func query(all bool) ([]ListedJob, error) {
 	currentUser, err := user.Current()
 	if err != nil {
 		return nil, fmt.Errorf("get current user: %w", err)
@@ -94,7 +94,16 @@ func query() ([]ListedJob, error) {
 		"STDOUT",
 		"STDERR",
 	}
-	cmd := exec.Command("squeue", "--noheader", "-u", currentUser.Uid, "-O", SqueueRequestString(req))
+	squeueArguments := []string{
+		"--noheader",
+		"-O", SqueueRequestString(req),
+	}
+	if !all {
+		squeueArguments = append(squeueArguments,
+			[]string{"-u", currentUser.Uid}...,
+		)
+	}
+	cmd := exec.Command("squeue", squeueArguments...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("exectute command: %w", err)
@@ -305,8 +314,8 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error)
 	return jobs, nil
 }
 
-func (b *Slurm) ListJobs() ([]spanner.Job, error) {
-	listOutput, err := query()
+func (b *Slurm) ListJobs(all bool) ([]spanner.Job, error) {
+	listOutput, err := query(all)
 	if err != nil {
 		return nil, fmt.Errorf("query list: %w", err)
 	}
