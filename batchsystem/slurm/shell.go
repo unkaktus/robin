@@ -1,4 +1,4 @@
-package pbs
+package slurm
 
 import (
 	"fmt"
@@ -6,18 +6,26 @@ import (
 	"os/exec"
 )
 
-func (b *PBS) SSH(jobName string, nodeID int) error {
+func (b *Slurm) Shell(jobName string, nodeID int, nodeSuffux string) error {
 	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}
+	found := false
 	for _, job := range jobList {
 		if job.Name == jobName {
+			found = true
 			if nodeID < 0 || nodeID >= len(job.Nodes) {
 				return fmt.Errorf("node ID is outside the node list range")
 			}
 			node := job.Nodes[nodeID]
-			cmd := exec.Command("/usr/bin/env", "PBS_JOBID="+job.ID, "ssh", node)
+			cmd := exec.Command("ssh",
+				[]string{
+					"-p", "2222",
+					"-o", "LogLevel=ERROR",
+					"-o", "UserKnownHostsFile=/dev/null",
+					"-o", "StrictHostKeyChecking=no",
+					node + nodeSuffux}...)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -26,6 +34,9 @@ func (b *PBS) SSH(jobName string, nodeID int) error {
 			}
 			break
 		}
+	}
+	if !found {
+		return fmt.Errorf("job not found")
 	}
 	return nil
 }

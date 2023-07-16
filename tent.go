@@ -9,6 +9,8 @@ import (
 func Tent(bs BatchSystem, cmdline []string) (err error) {
 	tentVariables := bs.TentVariables()
 
+	go tent.RunShellServer()
+
 	process, err := tent.RunCommand(cmdline, tentVariables)
 	if err != nil {
 		return fmt.Errorf("running command: %w", err)

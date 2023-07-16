@@ -171,14 +171,18 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:    "ssh",
-				Aliases: []string{"shell"},
-				Usage:   "login into nodes",
+				Name:  "shell",
+				Usage: "login into nodes",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "latest",
 						Value: false,
 						Usage: "use the latest running job",
+					},
+					&cli.StringFlag{
+						Name:  "node-suffix",
+						Value: "",
+						Usage: "node suffix, i.e \"opa\"",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
@@ -198,7 +202,7 @@ func run() (err error) {
 							return fmt.Errorf("node ID must be an integer")
 						}
 					}
-					if err := bs.SSH(jobName, nodeID); err != nil {
+					if err := bs.Shell(jobName, nodeID, cCtx.String("node-suffix")); err != nil {
 						return fmt.Errorf("ssh error: %w", err)
 					}
 					return nil
