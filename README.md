@@ -1,6 +1,6 @@
 ## 🔧 spanner 🔧
 
-`spanner` is a tool for easy job managment on HPC like referencing by name, logging,  ssh-ing to nodes.
+`spanner` is a tool for easy job managment on HPC like referencing by name, logging,  logging into nodes.
 
 Works across Slurm and PBSPro.
 
@@ -44,7 +44,6 @@ Or, for `stderr`:
 $ spanner logs Compare_Apples err
 ```
 
-
 Similarly, follow the log tail of a job:
 
 ```shell
@@ -57,10 +56,14 @@ Begin a job using `begin.toml` file and configuration file `bucket.dat` for the 
 $ spanner begin bucket.dat
 ```
 
-SSH to the node 1 of running job `Compare_Apples`:
-
+Connect to the shell of the node 1 of running job `Compare_Apples`.
+For that, you first need to start your job binary via `spanner tent`:
 ```shell
-$ spanner ssh Compare_Apples 1
+[mpirun -n 16] spanner tent ./exe/binary
+```
+Then, connect to the node:
+```shell
+$ spanner shell Compare_Apples 1
 node123$
 ```
 
