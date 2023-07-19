@@ -4,9 +4,21 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
+func isSupermuc() bool {
+	cmd := exec.Command("hostname", "-d")
+	combi, _ := cmd.CombinedOutput()
+	return strings.Contains(string(combi), "sng.lrz.de")
+}
+
 func (b *Slurm) Shell(jobName string, nodeID int, nodeSuffux string) error {
+	// XXX: in case it is SuperMUC, set opa route
+	if isSupermuc() {
+		nodeSuffux = "opa"
+	}
+
 	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
