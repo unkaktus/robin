@@ -2,11 +2,11 @@ package pbs
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
+
+	"github.com/unkaktus/spanner"
 )
 
-func (b *PBS) Shell(jobName string, nodeID int, nodeSuffix string) error {
+func (b *PBS) Shell(jobName string, nodeID int) error {
 	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
@@ -17,17 +17,8 @@ func (b *PBS) Shell(jobName string, nodeID int, nodeSuffix string) error {
 				return fmt.Errorf("node ID is outside the node list range")
 			}
 			node := job.Nodes[nodeID]
-			cmd := exec.Command("ssh",
-				[]string{
-					"-p", "2222",
-					"-o", "LogLevel=ERROR",
-					"-o", "UserKnownHostsFile=/dev/null",
-					"-o", "StrictHostKeyChecking=no",
-					node + nodeSuffix}...)
-			cmd.Stdin = os.Stdin
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
+
+			if err := spanner.Shell(node); err != nil {
 				return fmt.Errorf("execute ssh: %w", err)
 			}
 			break

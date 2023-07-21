@@ -9,6 +9,7 @@ require (
 	github.com/matryer/is v1.4.0
 	github.com/unkaktus/tablewriter v0.0.0-20230703221853-6772552276dd
 	github.com/urfave/cli/v2 v2.25.0
+	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d
 )
 
 require (
@@ -18,6 +19,6 @@ require (
 	github.com/rivo/uniseg v0.1.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d // indirect
 	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64 // indirect
+	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035 // indirect
 )

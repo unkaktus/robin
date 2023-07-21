@@ -179,11 +179,6 @@ func run() (err error) {
 						Value: false,
 						Usage: "use the latest running job",
 					},
-					&cli.StringFlag{
-						Name:  "node-suffix",
-						Value: "",
-						Usage: "node suffix, i.e \"opa\"",
-					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					jobName := cCtx.Args().Get(0)
@@ -202,7 +197,7 @@ func run() (err error) {
 							return fmt.Errorf("node ID must be an integer")
 						}
 					}
-					if err := bs.Shell(jobName, nodeID, cCtx.String("node-suffix")); err != nil {
+					if err := bs.Shell(jobName, nodeID); err != nil {
 						return fmt.Errorf("ssh error: %w", err)
 					}
 					return nil
