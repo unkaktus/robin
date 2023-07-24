@@ -6,12 +6,12 @@ import (
 	"github.com/unkaktus/spanner/tent"
 )
 
-func Tent(bs BatchSystem, cmdline []string) (err error) {
+func Tent(bs BatchSystem, cmdline []string, mergeOutput bool) (err error) {
 	tentVariables := bs.TentVariables()
 
 	go tent.RunShellServer()
 
-	process, err := tent.RunCommand(cmdline, tentVariables)
+	process, err := tent.RunCommand(cmdline, tentVariables, mergeOutput)
 	if err != nil {
 		return fmt.Errorf("running command: %w", err)
 	}

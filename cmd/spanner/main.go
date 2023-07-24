@@ -220,9 +220,17 @@ func run() (err error) {
 			{
 				Name:  "tent",
 				Usage: "run tent",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "split-output",
+						Value: false,
+						Usage: "use separate stderr and stdout",
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
-					if err := spanner.Tent(bs, cmdline); err != nil {
+					mergeOutput := !cCtx.Bool("split-output")
+					if err := spanner.Tent(bs, cmdline, mergeOutput); err != nil {
 						return fmt.Errorf("tent: %w", err)
 					}
 					return nil

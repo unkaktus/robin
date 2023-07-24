@@ -29,7 +29,7 @@ type Variables struct {
 	TotalTaskNumber int
 }
 
-func RunCommand(cmdline []string, vars Variables) (process *os.Process, err error) {
+func RunCommand(cmdline []string, vars Variables, mergeOutput bool) (process *os.Process, err error) {
 	for i, arg := range cmdline {
 		cmdline[i], err = ExecTemplate(arg, vars)
 		if err != nil {
@@ -39,7 +39,11 @@ func RunCommand(cmdline []string, vars Variables) (process *os.Process, err erro
 	cmd := exec.Command(cmdline[0], cmdline[1:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if mergeOutput {
+		cmd.Stderr = os.Stdout
+	} else {
+		cmd.Stderr = os.Stderr
+	}
 	err = cmd.Start()
 	if err != nil {
 		return nil, fmt.Errorf("task start: %v", err)
