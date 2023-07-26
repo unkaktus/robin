@@ -4,7 +4,27 @@
 
 Works across Slurm and PBSPro.
 
-### Building
+### Easy installation
+
+0. Install MambaForge on your cluster. In case you don't
+have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
+
+1. Install Go
+```shell
+mamba install go
+```
+
+2. Install `spanner`:
+```shell
+go install https://github.com/unkaktus/spanner/cmd/spanner@latest
+```
+
+3. Add `$HOME/go/bin` into your `$PATH` into your `.bashrc`:
+```shell
+export PATH="$HOME/go/bin:$PATH"
+```
+
+### Manual building
 
 0. Install Go (https://go.dev)
 
