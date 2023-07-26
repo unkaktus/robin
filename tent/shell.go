@@ -1,8 +1,11 @@
 package tent
 
 import (
+	"bytes"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"syscall"
 	"unsafe"
 
@@ -19,11 +23,33 @@ import (
 )
 
 const (
-	TokenLength int = 16
+	tokenLength  int    = 24
+	fallbackPort uint64 = 2222
 )
 
+func UserPort() uint64 {
+	uid := os.Getuid()
+	h := sha256.New()
+	h.Write([]byte("spanner tent uid to port"))
+	binary.Write(h, binary.BigEndian, int64(uid))
+	hash := h.Sum(nil)
+	reader := bytes.NewReader(hash)
+	number, err := binary.ReadUvarint(reader)
+	if err != nil {
+		return fallbackPort
+	}
+	// Keep the port in the safe range
+	if number < 10240 {
+		number += 10240
+	}
+	if number >= 65535 {
+		number = number % 65535
+	}
+	return number
+}
+
 func generateToken() string {
-	rb := make([]byte, TokenLength)
+	rb := make([]byte, tokenLength)
 	_, err := rand.Read(rb)
 
 	if err != nil {
@@ -67,17 +93,20 @@ func kiHandler(ctx ssh.Context, challenger gossh.KeyboardInteractiveChallenge) b
 
 func sessionHandler(s ssh.Session) {
 	io.WriteString(s, "Connected to spanner shell.\n")
-	cmd := exec.Command("bash")
 	ptyReq, winCh, isPty := s.Pty()
 	if !isPty {
 		io.WriteString(s, "No PTY requested.\n")
 		s.Exit(1)
 		return
 	}
-	cmd.Env = append(cmd.Env, fmt.Sprintf("TERM=%s", ptyReq.Term))
+	cmd := exec.Command("bash")
+	cmd.Env = append(os.Environ(), []string{
+		fmt.Sprintf("TERM=%s", ptyReq.Term),
+	}...)
 	f, err := pty.Start(cmd)
 	if err != nil {
-		panic(err)
+		log.Printf("start pty: %v", err)
+		return
 	}
 	go func() {
 		for win := range winCh {
@@ -97,8 +126,9 @@ func setWinsize(f *os.File, w, h int) {
 }
 
 func RunShellServer() error {
+	userPort := UserPort()
 	server := &ssh.Server{
-		Addr:                       ":2222",
+		Addr:                       ":" + strconv.FormatUint(userPort, 10),
 		Handler:                    sessionHandler,
 		KeyboardInteractiveHandler: kiHandler,
 	}

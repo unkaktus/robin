@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/unkaktus/spanner/tent"
 	gossh "golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
@@ -26,7 +28,8 @@ func Shell(hostname string) error {
 			gossh.KeyboardInteractive(kiHandler),
 		},
 	}
-	conn, err := gossh.Dial("tcp", hostname+":2222", config)
+	addr := hostname + ":" + strconv.FormatUint(tent.UserPort(), 10)
+	conn, err := gossh.Dial("tcp", addr, config)
 	if err != nil {
 		return fmt.Errorf("dial ssh: %w", err)
 	}
