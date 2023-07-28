@@ -98,3 +98,19 @@ and configuration file `data.csv` for the run:
 ```shell
 $ spanner begin -f compare_apples.begin data.csv
 ```
+
+
+#### Remote commands
+
+Do all above without logging manually to the cluster:
+
+```shell
+$ spanner on supercomp list
+```
+
+```shell
+$ spanner on supercomp shell compare_apples
+```
+
+This requires to have `spanner` to be installed and
+added to the `PATH` there.

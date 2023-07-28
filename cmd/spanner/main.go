@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -16,6 +17,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	errUnsupported error = errors.New("unsupported batch system")
+)
+
 func run() (err error) {
 	var bs spanner.BatchSystem
 
@@ -24,8 +29,6 @@ func run() (err error) {
 		bs = &pbs.PBS{}
 	case batchsystem.BatchSlurm:
 		bs = &slurm.Slurm{}
-	default:
-		return fmt.Errorf("unsupported batch system")
 	}
 
 	app := &cli.App{
@@ -44,6 +47,10 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					all := cCtx.Bool("all")
 					state := strings.ToUpper(flag.Arg(1))
 					if err := spanner.ListJobs(bs, all, state); err != nil {
@@ -78,6 +85,9 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
 					jobName := cCtx.Args().Get(0)
 					if cCtx.Bool("latest") {
 						job, err := spanner.LatestJob(bs)
@@ -121,6 +131,10 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					configFilename := cCtx.Args().Get(0)
 					if err := spanner.Begin(bs, cCtx.String("f"), configFilename, cCtx.Bool("dry")); err != nil {
 						return fmt.Errorf("begin: %w", err)
@@ -133,6 +147,10 @@ func run() (err error) {
 				Usage: "submit a job file without magic",
 
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					jobDataFilename := cCtx.Args().First()
 					jobData, err := ioutil.ReadFile(jobDataFilename)
 					if err != nil {
@@ -156,6 +174,10 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					jobName := cCtx.Args().First()
 					if cCtx.Bool("latest") {
 						job, err := spanner.LatestJob(bs)
@@ -181,6 +203,10 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					jobName := cCtx.Args().Get(0)
 					if cCtx.Bool("latest") {
 						job, err := spanner.LatestJob(bs)
@@ -207,6 +233,10 @@ func run() (err error) {
 				Name:  "clear",
 				Usage: "clear job history",
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					target := cCtx.Args().First()
 					if target != "history" {
 						return fmt.Errorf("unknown target: %s", target)
@@ -228,10 +258,26 @@ func run() (err error) {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
 					mergeOutput := !cCtx.Bool("split-output")
 					if err := spanner.Tent(bs, cmdline, mergeOutput); err != nil {
 						return fmt.Errorf("tent: %w", err)
+					}
+					return nil
+				},
+			},
+			{
+				Name:  "on",
+				Usage: "run spanner commands remotely, e.g., spanner on machine list",
+				Action: func(cCtx *cli.Context) error {
+					machine := cCtx.Args().First()
+					cmdline := cCtx.Args().Tail()
+					if err := spanner.On(machine, cmdline); err != nil {
+						return fmt.Errorf("spanner on remote: %w", err)
 					}
 					return nil
 				},
