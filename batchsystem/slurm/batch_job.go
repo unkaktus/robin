@@ -15,12 +15,11 @@ func (b *Slurm) JobData(job batchsystem.Job) (string, error) {
 {{ if ne .Account ""}}#SBATCH --account={{.Account}}{{end}}
 {{ if ne .Partition ""}}#SBATCH --partition={{.Partition}}{{end}}
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user={{.Email}}
+{{ if ne .Email ""}}#SBATCH --mail-user={{.Email}}{{end}}
 #SBATCH --nodes {{.Nodes}}
 #SBATCH --ntasks-per-node {{.TasksPerNode}}
 #SBATCH --time={{.Walltime}}
-`,
-		job)
+`, job)
 	if err != nil {
 		return "", fmt.Errorf("execute template: %w", err)
 	}
