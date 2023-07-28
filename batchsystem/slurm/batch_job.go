@@ -19,6 +19,8 @@ func (b *Slurm) JobData(job batchsystem.Job) (string, error) {
 #SBATCH --nodes {{.Nodes}}
 #SBATCH --ntasks-per-node {{.TasksPerNode}}
 #SBATCH --time={{.Walltime}}
+{{range .ExtraFlags}}#SBATCH {{.}}
+{{end}}
 `, job)
 	if err != nil {
 		return "", fmt.Errorf("execute template: %w", err)

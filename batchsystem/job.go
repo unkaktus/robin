@@ -19,6 +19,8 @@ type Job struct {
 	Walltime  string
 	Email     string
 
+	ExtraFlags []string
+
 	WorkingDirectory string
 	OutputFile       string
 	ErrorFile        string

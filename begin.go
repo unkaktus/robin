@@ -45,6 +45,7 @@ func Begin(b BatchSystem, beginFilename, configFilename string, dryRun bool) err
 		Account:          beginfile.Account,
 		Walltime:         begin.FormatDuration(beginfile.Walltime),
 		Email:            beginfile.Email,
+		ExtraFlags:       beginfile.ExtraFlags,
 		WorkingDirectory: beginfile.WorkingDirectory,
 		InitScript:       beginfile.InitScript,
 		Runtime:          beginfile.Runtime,

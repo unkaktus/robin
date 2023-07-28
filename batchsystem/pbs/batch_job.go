@@ -17,7 +17,10 @@ func (b *PBS) JobData(job batchsystem.Job) (string, error) {
 		`:node_type={{.NodeType}}`+
 		`:mpiprocs={{.NumberOfMPIRanksPerNode}}`+
 		`:ompthreads={{.NumberOfOMPThreadsPerProcess}}`+`
-#PBS -l walltime={{.WalltimeString}}`, job)
+#PBS -l walltime={{.WalltimeString}}
+{{range .ExtraFlags}}#PBS {{.}}
+{{end}}
+`, job)
 	if err != nil {
 		return "", fmt.Errorf("execute template: %w", err)
 	}
