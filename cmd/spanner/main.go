@@ -230,24 +230,6 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:  "clear",
-				Usage: "clear job history",
-				Action: func(cCtx *cli.Context) error {
-					if bs == nil {
-						return errUnsupported
-					}
-
-					target := cCtx.Args().First()
-					if target != "history" {
-						return fmt.Errorf("unknown target: %s", target)
-					}
-					if err := bs.ClearHistory(); err != nil {
-						return fmt.Errorf("clear hisory error: %w", err)
-					}
-					return nil
-				},
-			},
-			{
 				Name:  "tent",
 				Usage: "run tent",
 				Flags: []cli.Flag{

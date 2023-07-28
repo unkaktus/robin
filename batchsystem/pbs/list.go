@@ -34,7 +34,7 @@ type ListOutput struct {
 }
 
 func query() (*ListOutput, error) {
-	cmd := exec.Command("qstat", "-xf", "-F", "json")
+	cmd := exec.Command("qstat", "-f", "-F", "json")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("exectute command: %w", err)
@@ -149,11 +149,6 @@ func (b *PBS) ListJobs(all bool) ([]spanner.Job, error) {
 	jobList, err := listOutputToJobList(listOutput)
 	if err != nil {
 		return nil, fmt.Errorf("convert to job list: %w", err)
-	}
-
-	err = b.clearInvisibleJobs(jobList)
-	if err != nil {
-		return nil, fmt.Errorf("clear invisible jobs: %w", err)
 	}
 
 	return jobList, nil
