@@ -16,7 +16,7 @@ mamba install go
 
 2. Install `spanner`:
 ```shell
-go install https://github.com/unkaktus/spanner/cmd/spanner@latest
+go install github.com/unkaktus/spanner/cmd/spanner@latest
 ```
 
 3. Add `$HOME/go/bin` into your `$PATH` into your `.bashrc`:
