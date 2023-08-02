@@ -6,15 +6,20 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/unkaktus/tablewriter"
 )
 
-func showTable(jobList []Job) error {
+func showTable(jobList []Job, full bool) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetRoundedStyle()
-	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes"})
+	if full {
+		table.SetHeader([]string{"Name", "ID", "State", "Queue", "Time", "Nodes"})
+	} else {
+		table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes"})
+	}
 
 	for _, job := range jobList {
 		timeString := ""
@@ -28,21 +33,38 @@ func showTable(jobList []Job) error {
 				job.RequestedWalltime,
 			)
 		}
-
-		table.Append([]string{
-			job.Name,
-			fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
-			job.Queue,
-			timeString,
-			strconv.Itoa(job.NodeNumber),
-		})
+		if full {
+			table.Append([]string{
+				job.Name,
+				job.ID,
+				fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
+				job.Queue,
+				timeString,
+				strings.Join(job.Nodes, ", "),
+			})
+		} else {
+			table.Append([]string{
+				job.Name,
+				fmt.Sprintf("%s [%d]", job.State, job.ExitCode),
+				job.Queue,
+				timeString,
+				strconv.Itoa(job.NodeNumber),
+			})
+		}
 	}
 	table.Render()
 	return nil
 }
 
-func ListJobs(bs BatchSystem, all, machineReadable bool, state string) error {
-	jobList, err := bs.ListJobs(all)
+type ListRequest struct {
+	All             bool
+	Full            bool
+	MachineReadable bool
+	State           string
+}
+
+func ListJobs(bs BatchSystem, request ListRequest) error {
+	jobList, err := bs.ListJobs(request.All)
 	if err != nil {
 		return fmt.Errorf("query job list: %w", err)
 	}
@@ -62,7 +84,7 @@ func ListJobs(bs BatchSystem, all, machineReadable bool, state string) error {
 	jobList = []Job{}
 	for _, job := range jobMap {
 		// Skip the job with other states
-		if state != "" && job.State != state {
+		if request.State != "" && job.State != request.State {
 			continue
 		}
 		jobList = append(jobList, job)
@@ -72,12 +94,12 @@ func ListJobs(bs BatchSystem, all, machineReadable bool, state string) error {
 		return jobList[i].Name < jobList[j].Name
 	})
 
-	if machineReadable {
+	if request.MachineReadable {
 		if err := json.NewEncoder(os.Stdout).Encode(jobList); err != nil {
 			return fmt.Errorf("encode list: %w", err)
 		}
 	} else {
-		if err := showTable(jobList); err != nil {
+		if err := showTable(jobList, request.Full); err != nil {
 			return fmt.Errorf("show table: %w", err)
 		}
 	}

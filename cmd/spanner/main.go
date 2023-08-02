@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -46,6 +45,16 @@ func run() (err error) {
 						Usage: "include jobs of other users",
 					},
 					&cli.BoolFlag{
+						Name:  "full",
+						Value: false,
+						Usage: "include more information on the job, e.g. job ID and node list",
+					},
+					&cli.StringFlag{
+						Name:  "state",
+						Value: "",
+						Usage: "select the jobs with certain state",
+					},
+					&cli.BoolFlag{
 						Name:  "json",
 						Value: false,
 						Usage: "output the list in JSON format",
@@ -55,10 +64,13 @@ func run() (err error) {
 						return errUnsupported
 					}
 
-					all := cCtx.Bool("all")
-					machineReadable := cCtx.Bool("json")
-					state := strings.ToUpper(flag.Arg(1))
-					if err := spanner.ListJobs(bs, all, machineReadable, state); err != nil {
+					listRequest := spanner.ListRequest{
+						All:             cCtx.Bool("all"),
+						Full:            cCtx.Bool("full"),
+						MachineReadable: cCtx.Bool("json"),
+						State:           strings.ToUpper(cCtx.String("state")),
+					}
+					if err := spanner.ListJobs(bs, listRequest); err != nil {
 						return fmt.Errorf("list error: %w", err)
 					}
 					return nil
