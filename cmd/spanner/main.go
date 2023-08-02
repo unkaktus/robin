@@ -281,6 +281,47 @@ func run() (err error) {
 					return nil
 				},
 			},
+			{
+				Name:  "port-forward",
+				Usage: "forward a TCP port to a job node on a cluster",
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:    "port",
+						Aliases: []string{"p"},
+						Value:   0,
+						Usage:   "port to forward",
+					},
+					&cli.StringFlag{
+						Name:    "machine",
+						Aliases: []string{"m"},
+						Value:   "",
+						Usage:   "machine to connect to, i.e. login node",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					jobName := cCtx.Args().Get(0)
+					nodeIDString := cCtx.Args().Get(1)
+					nodeID := 0
+					if nodeIDString != "" {
+						nodeID, err = strconv.Atoi(nodeIDString)
+						if err != nil {
+							return fmt.Errorf("node ID must be an integer")
+						}
+					}
+					port := cCtx.Int("port")
+					if port == 0 {
+						return fmt.Errorf("port must be specified")
+					}
+					machine := cCtx.String("machine")
+					if machine == "" {
+						return fmt.Errorf("machine must be specified")
+					}
+					if err := spanner.PortForward(machine, jobName, port, nodeID); err != nil {
+						return fmt.Errorf("ssh error: %w", err)
+					}
+					return nil
+				},
+			},
 		},
 	}
 	return app.Run(os.Args)

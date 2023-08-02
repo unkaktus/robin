@@ -114,3 +114,12 @@ $ spanner on supercomp shell compare_apples
 
 This requires to have `spanner` to be installed and
 added to the `PATH` there.
+
+#### Port forwarding
+
+Forward a port to the node of a job:
+
+```shell
+$ spanner port-forward -p 11111 -m supercomp compare_apples
+```
+
