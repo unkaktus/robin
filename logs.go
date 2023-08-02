@@ -8,6 +8,11 @@ import (
 )
 
 func Logs(b BatchSystem, jobName string, outputType string) error {
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vim"
+	}
+
 	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
@@ -18,7 +23,7 @@ func Logs(b BatchSystem, jobName string, outputType string) error {
 			if outputType == "err" {
 				logFile = job.ErrorFile
 			}
-			cmd := exec.Command("vim", logFile)
+			cmd := exec.Command(editor, logFile)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr

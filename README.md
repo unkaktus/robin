@@ -54,7 +54,7 @@ $ spanner list
 
 #### Logs
 
-Open full logs in `vim`:
+Open full logs in `$EDITOR` (defauts to `vim`):
 
 ```shell
 $ spanner logs Compare_Apples
