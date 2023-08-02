@@ -14,9 +14,7 @@ func (b *PBS) JobData(job batchsystem.Job) (string, error) {
 #PBS -m abe
 {{ if ne .Email ""}}#PBS -M {{.Email}}{{end}}
 #PBS -l select={{.NumberOfNodes}}`+
-		`:node_type={{.NodeType}}`+
-		`:mpiprocs={{.NumberOfMPIRanksPerNode}}`+
-		`:ompthreads={{.NumberOfOMPThreadsPerProcess}}`+`
+		`:node_type={{.NodeType}}`+`
 #PBS -l walltime={{.WalltimeString}}
 {{range .ExtraFlags}}#PBS {{.}}
 {{end}}

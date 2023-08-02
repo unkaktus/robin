@@ -26,7 +26,6 @@ type Job struct {
 	Nodes             []string
 	NodeNumber        int
 	CPUNumber         int
-	MPIProcessNumber  int
 	CPUTime           time.Duration
 	Walltime          time.Duration
 	RequestedWalltime time.Duration

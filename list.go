@@ -13,7 +13,7 @@ import (
 func showTable(jobList []Job) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetRoundedStyle()
-	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes", "MPI"})
+	table.SetHeader([]string{"Name", "State", "Queue", "Time", "Nodes"})
 
 	for _, job := range jobList {
 		timeString := ""
@@ -34,7 +34,6 @@ func showTable(jobList []Job) error {
 			job.Queue,
 			timeString,
 			strconv.Itoa(job.NodeNumber),
-			fmt.Sprintf("%d/%d", job.MPIProcessNumber/job.NodeNumber, job.MPIProcessNumber),
 		})
 	}
 	table.Render()
