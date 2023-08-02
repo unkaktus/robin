@@ -45,15 +45,20 @@ func run() (err error) {
 						Value: false,
 						Usage: "include jobs of other users",
 					},
-				},
+					&cli.BoolFlag{
+						Name:  "json",
+						Value: false,
+						Usage: "output the list in JSON format",
+					}},
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
 						return errUnsupported
 					}
 
 					all := cCtx.Bool("all")
+					machineReadable := cCtx.Bool("json")
 					state := strings.ToUpper(flag.Arg(1))
-					if err := spanner.ListJobs(bs, all, state); err != nil {
+					if err := spanner.ListJobs(bs, all, machineReadable, state); err != nil {
 						return fmt.Errorf("list error: %w", err)
 					}
 					return nil

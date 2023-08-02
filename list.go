@@ -1,6 +1,7 @@
 package spanner
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -40,7 +41,7 @@ func showTable(jobList []Job) error {
 	return nil
 }
 
-func ListJobs(bs BatchSystem, all bool, state string) error {
+func ListJobs(bs BatchSystem, all, machineReadable bool, state string) error {
 	jobList, err := bs.ListJobs(all)
 	if err != nil {
 		return fmt.Errorf("query job list: %w", err)
@@ -71,8 +72,14 @@ func ListJobs(bs BatchSystem, all bool, state string) error {
 		return jobList[i].Name < jobList[j].Name
 	})
 
-	if err := showTable(jobList); err != nil {
-		return fmt.Errorf("query list: %w", err)
+	if machineReadable {
+		if err := json.NewEncoder(os.Stdout).Encode(jobList); err != nil {
+			return fmt.Errorf("encode list: %w", err)
+		}
+	} else {
+		if err := showTable(jobList); err != nil {
+			return fmt.Errorf("show table: %w", err)
+		}
 	}
 
 	return nil
