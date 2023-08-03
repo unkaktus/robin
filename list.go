@@ -121,3 +121,16 @@ func LatestJob(bs BatchSystem) (*Job, error) {
 
 	return &jobList[0], nil
 }
+
+func findJob(b BatchSystem, jobName string) (job Job, err error) {
+	jobList, err := b.ListJobs(true)
+	if err != nil {
+		return job, fmt.Errorf("list jobs: %w", err)
+	}
+	for _, job = range jobList {
+		if job.Name == jobName {
+			return job, nil
+		}
+	}
+	return job, fmt.Errorf("job not found")
+}
