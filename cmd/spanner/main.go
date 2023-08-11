@@ -32,7 +32,14 @@ func run() (err error) {
 
 	app := &cli.App{
 		Name:     "spanner",
-		HelpName: "one tool for all HPC",
+		HelpName: "spanner",
+		Usage:    "One tool for all HPC",
+		Authors: []*cli.Author{
+			&cli.Author{
+				Name:  "Ivan Markin",
+				Email: "git@unkaktus.art",
+			},
+		},
 		Commands: []*cli.Command{
 			{
 				Name:    "list",
