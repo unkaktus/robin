@@ -4,7 +4,17 @@
 
 Works across Slurm and PBSPro.
 
-### Easy installation
+### Easy installation using Mamba
+
+Install MambaForge on your cluster. In case you don't
+have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
+
+Then, install `spanner` itself:
+```shell
+mamba install -c https://mamba.unkaktus.art spanner
+```
+
+### Installation using Go
 
 0. Install MambaForge on your cluster. In case you don't
 have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
