@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"syscall"
 	"unsafe"
 
@@ -125,7 +126,35 @@ func setWinsize(f *os.File, w, h int) {
 		uintptr(unsafe.Pointer(&struct{ h, w, x, y uint16 }{uint16(h), uint16(w), 0, 0})))
 }
 
+func kiClientHandler(name, instruction string, questions []string, echos []bool) (answers []string, err error) {
+	tokenFilename := strings.TrimSpace(questions[0])
+	token, err := ioutil.ReadFile(tokenFilename)
+	if err != nil {
+		return nil, fmt.Errorf("read token file: %w", err)
+	}
+	return []string{string(token)}, nil
+}
+
+func shellIsPresent() bool {
+	config := &gossh.ClientConfig{
+		HostKeyCallback: gossh.InsecureIgnoreHostKey(),
+		Auth: []gossh.AuthMethod{
+			gossh.KeyboardInteractive(kiClientHandler),
+		},
+	}
+	addr := "localhost:" + strconv.FormatUint(UserPort(), 10)
+	conn, err := gossh.Dial("tcp", addr, config)
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
+}
+
 func RunShellServer() error {
+	if shellIsPresent() {
+		return nil
+	}
 	userPort := UserPort()
 	server := &ssh.Server{
 		Addr:                       ":" + strconv.FormatUint(userPort, 10),

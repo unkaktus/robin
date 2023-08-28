@@ -20,8 +20,10 @@ func Tent(bs BatchSystem, cmdline []string, mergeOutput bool) (err error) {
 		for retry := 0; retry < maxRetries; retry++ {
 			if err := tent.RunShellServer(); err != nil {
 				log.Printf("spanner: could not start shell server: %v", err)
+				time.Sleep(retryDelay)
+				continue
 			}
-			time.Sleep(retryDelay)
+			break
 		}
 	}()
 
