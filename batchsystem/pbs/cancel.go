@@ -7,6 +7,11 @@ import (
 	"os/exec"
 )
 
+var (
+	cmdTerminate = []string{"qsig", "-s", "SIGTERM"}
+	cmdDelete    = []string{"qdel", "-x"}
+)
+
 func (b *PBS) Cancel(jobName string) error {
 	jobList, err := b.ListJobs(true)
 	if err != nil {
@@ -16,7 +21,13 @@ func (b *PBS) Cancel(jobName string) error {
 	for _, job := range jobList {
 		if job.Name == jobName {
 			found = true
-			cmd := exec.Command("qsig", "-s", "SIGTERM", job.ID)
+			var cmdline []string
+			if job.State == "R" {
+				cmdline = cmdTerminate
+			} else {
+				cmdline = cmdDelete
+			}
+			cmd := exec.Command(cmdline[0], append(cmdline[1:], job.ID)...)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
