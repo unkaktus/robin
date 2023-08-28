@@ -13,7 +13,7 @@ const (
 	retryDelay time.Duration = 1 * time.Second
 )
 
-func Tent(bs BatchSystem, cmdline []string, mergeOutput bool) (err error) {
+func Tent(bs BatchSystem, cmdline []string, mergeOutput, noCommand bool) (err error) {
 	tentVariables := bs.TentVariables()
 
 	go func() {
@@ -27,13 +27,17 @@ func Tent(bs BatchSystem, cmdline []string, mergeOutput bool) (err error) {
 		}
 	}()
 
-	process, err := tent.RunCommand(cmdline, tentVariables, mergeOutput)
-	if err != nil {
-		return fmt.Errorf("running command: %w", err)
-	}
-	_, err = process.Wait()
-	if err != nil {
-		return fmt.Errorf("waiting on the process: %w", err)
+	if noCommand {
+		select {}
+	} else {
+		process, err := tent.RunCommand(cmdline, tentVariables, mergeOutput)
+		if err != nil {
+			return fmt.Errorf("running command: %w", err)
+		}
+		_, err = process.Wait()
+		if err != nil {
+			return fmt.Errorf("waiting on the process: %w", err)
+		}
 	}
 	return nil
 }
