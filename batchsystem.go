@@ -31,4 +31,5 @@ type Job struct {
 	RequestedWalltime time.Duration
 	OutputFile        string
 	ErrorFile         string
+	WorkingDirectory  string
 }

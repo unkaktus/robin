@@ -12,14 +12,17 @@ import (
 
 type ListOutput struct {
 	Jobs map[string]struct {
-		Name          string `json:"Job_Name"`
-		State         string `json:"job_state"`
-		Queue         string `json:"queue"`
-		CreationTime  string `json:"ctime"`
-		ExecHosts     string `json:"exec_host"`
-		ErrorPath     string `json:"Error_Path"`
-		OutputPath    string `json:"Output_Path"`
-		ExitStatus    int    `json:"Exit_status"`
+		Name         string `json:"Job_Name"`
+		State        string `json:"job_state"`
+		Queue        string `json:"queue"`
+		CreationTime string `json:"ctime"`
+		ExecHosts    string `json:"exec_host"`
+		ErrorPath    string `json:"Error_Path"`
+		OutputPath   string `json:"Output_Path"`
+		VariableList struct {
+			WorkDir string `json:"PBS_O_WORKDIR"`
+		} `json:"Variable_List"`
+		ExitStatus    int `json:"Exit_status"`
 		ResourcesUsed struct {
 			CPUTime  string `json:"cput"`
 			Walltime string `json:"walltime"`
@@ -132,6 +135,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 			RequestedWalltime: requestedWalltime,
 			OutputFile:        filePath(listedJob.OutputPath),
 			ErrorFile:         filePath(listedJob.ErrorPath),
+			WorkingDirectory:  listedJob.VariableList.WorkDir,
 		}
 		jobs = append(jobs, job)
 	}

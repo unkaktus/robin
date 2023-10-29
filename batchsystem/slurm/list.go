@@ -14,18 +14,19 @@ import (
 )
 
 type ListedJob struct {
-	Name       string
-	ID         string
-	Partition  string
-	State      string
-	ExitCode   string
-	SubmitTime string
-	NodeList   string
-	NodeNumber string
-	TimeUsed   string
-	TimeLimit  string
-	OutputFile string
-	ErrorFile  string
+	Name             string
+	ID               string
+	Partition        string
+	State            string
+	ExitCode         string
+	SubmitTime       string
+	NodeList         string
+	NodeNumber       string
+	TimeUsed         string
+	TimeLimit        string
+	OutputFile       string
+	ErrorFile        string
+	WorkingDirectory string
 }
 
 const (
@@ -71,6 +72,8 @@ func UnmarshalSqueueOutput(data []byte) (ListedJob, error) {
 	listedJob.OutputFile = valueString(data, i)
 	i += outlen
 	listedJob.ErrorFile = valueString(data, i)
+	i += outlen
+	listedJob.WorkingDirectory = valueString(data, i)
 
 	return listedJob, nil
 }
@@ -93,6 +96,7 @@ func query(all bool) ([]ListedJob, error) {
 		"TimeLimit",
 		"STDOUT",
 		"STDERR",
+		"WorkDir",
 	}
 	squeueArguments := []string{
 		"--noheader",
@@ -309,6 +313,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error)
 			RequestedWalltime: requestedWalltime,
 			OutputFile:        listedJob.OutputFile,
 			ErrorFile:         listedJob.ErrorFile,
+			WorkingDirectory:  listedJob.WorkingDirectory,
 		}
 		jobs = append(jobs, job)
 	}
