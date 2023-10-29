@@ -34,7 +34,7 @@ func findJobOnRemote(machine, jobName string) (*Job, error) {
 	jobList := []Job{}
 	err = json.Unmarshal([]byte(output[1]), &jobList)
 	if err != nil {
-		return nil, fmt.Errorf("unmashal JSON output: %w", err)
+		return nil, fmt.Errorf("unmarshal JSON output: %w", err)
 	}
 	for _, job := range jobList {
 		if job.Name == jobName {

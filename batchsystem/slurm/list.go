@@ -29,7 +29,7 @@ type ListedJob struct {
 }
 
 const (
-	outlen = 255
+	outlen = 16384
 )
 
 func SqueueRequestString(fields []string) string {
@@ -44,7 +44,7 @@ func valueString(data []byte, i int) string {
 	return strings.TrimRight(string(data[i:i+outlen]), " ")
 }
 
-func UnmashalSqueueOutput(data []byte) (ListedJob, error) {
+func UnmarshalSqueueOutput(data []byte) (ListedJob, error) {
 	listedJob := ListedJob{}
 
 	i := 0
@@ -112,8 +112,9 @@ func query(all bool) ([]ListedJob, error) {
 	listedJobs := []ListedJob{}
 
 	scanner := bufio.NewScanner(bytes.NewReader(out))
+	scanner.Buffer(nil, 16*outlen)
 	for scanner.Scan() {
-		listedJob, err := UnmashalSqueueOutput(scanner.Bytes())
+		listedJob, err := UnmarshalSqueueOutput(scanner.Bytes())
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal squeue output:: %w", err)
 		}
