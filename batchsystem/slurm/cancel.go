@@ -8,7 +8,7 @@ import (
 )
 
 func (b *Slurm) Cancel(jobName string) error {
-	jobList, err := b.ListJobs(true)
+	jobList, err := b.ListJobs(false)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
 	}

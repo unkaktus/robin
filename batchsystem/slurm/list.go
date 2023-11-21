@@ -333,3 +333,16 @@ func (b *Slurm) ListJobs(all bool) ([]spanner.Job, error) {
 
 	return jobList, nil
 }
+
+func (b *Slurm) FindJob(jobName string) (*spanner.Job, error) {
+	jobList, err := b.ListJobs(false)
+	if err != nil {
+		return nil, fmt.Errorf("list jobs: %w", err)
+	}
+	for _, job := range jobList {
+		if job.Name == jobName {
+			return &job, nil
+		}
+	}
+	return nil, nil
+}
