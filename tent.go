@@ -25,7 +25,9 @@ func Tent(bs BatchSystem, cmdline []string, noCommand bool) error {
 			}
 			break
 		}
-		log.Printf("spanner: could not start shell server: %v", err)
+		if err != nil {
+			log.Printf("spanner: could not start shell server: %v", err)
+		}
 	}()
 
 	if noCommand {

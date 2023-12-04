@@ -128,7 +128,7 @@ func setWinsize(f *os.File, w, h int) {
 
 func kiClientHandler(name, instruction string, questions []string, echos []bool) (answers []string, err error) {
 	tokenFilename := strings.TrimSpace(questions[0])
-	token, err := ioutil.ReadFile(tokenFilename)
+	token, err := os.ReadFile(tokenFilename)
 	if err != nil {
 		return nil, fmt.Errorf("read token file: %w", err)
 	}
