@@ -257,11 +257,6 @@ func run() (err error) {
 				Usage: "run tent",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name:  "split-output",
-						Value: false,
-						Usage: "use separate stderr and stdout",
-					},
-					&cli.BoolFlag{
 						Name:  "no-command",
 						Value: false,
 						Usage: "start tent without any command",
@@ -273,9 +268,8 @@ func run() (err error) {
 					}
 
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
-					mergeOutput := !cCtx.Bool("split-output")
 					noCommand := cCtx.Bool("no-command")
-					if err := spanner.Tent(bs, cmdline, mergeOutput, noCommand); err != nil {
+					if err := spanner.Tent(bs, cmdline, noCommand); err != nil {
 						return fmt.Errorf("tent: %w", err)
 					}
 					return nil
