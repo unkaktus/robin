@@ -84,6 +84,12 @@ to start your job binary via `spanner tent`:
 ```shell
 [mpirun -n 16] spanner tent ./exe/binary
 ```
+For `tent` on PBS Pro, you need to export the following variable
+inside your job:
+
+```shell
+export MPI_SHEPHERD=true
+```
 
 Then, to connect to the shell of the node 1 of running job `Compare_Apples`:
 
