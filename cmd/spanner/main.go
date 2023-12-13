@@ -93,8 +93,8 @@ func run() (err error) {
 					},
 					&cli.IntFlag{
 						Name:  "n",
-						Value: 30,
-						Usage: "number of lines in the tail",
+						Value: 5120,
+						Usage: "number of bytes from the end to show, 0 to start from the beginning",
 					},
 					&cli.BoolFlag{
 						Name:  "latest",
@@ -129,8 +129,8 @@ func run() (err error) {
 							return fmt.Errorf("logs error: %w", err)
 						}
 					case true:
-						nLines := cCtx.Int("n")
-						if err := spanner.Logtail(bs, jobName, outputType, nLines); err != nil {
+						nBytes := cCtx.Int("n")
+						if err := spanner.Logtail(bs, jobName, outputType, nBytes); err != nil {
 							return fmt.Errorf("logs error: %w", err)
 						}
 					}
