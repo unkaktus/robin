@@ -69,6 +69,9 @@ func parseNodeList(s string) ([]string, error) {
 	sp := strings.Split(s, "+")
 	for _, nd := range sp {
 		n := strings.Split(nd, "/")
+		if len(n[0]) == 0 {
+			continue
+		}
 		nodes = append(nodes, n[0])
 	}
 	return nodes, nil
