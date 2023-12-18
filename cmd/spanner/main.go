@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/unkaktus/spanner"
 	"github.com/unkaktus/spanner/batchsystem"
 	"github.com/unkaktus/spanner/batchsystem/pbs"
@@ -20,6 +21,8 @@ var (
 )
 
 func run() (err error) {
+	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+
 	var bs spanner.BatchSystem
 
 	switch batchsystem.DetectBatchSystem() {
@@ -64,7 +67,8 @@ func run() (err error) {
 						Name:  "json",
 						Value: false,
 						Usage: "output the list in JSON format",
-					}},
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
 						return errUnsupported
@@ -175,7 +179,7 @@ func run() (err error) {
 					}
 
 					jobDataFilename := cCtx.Args().First()
-					jobData, err := ioutil.ReadFile(jobDataFilename)
+					jobData, err := os.ReadFile(jobDataFilename)
 					if err != nil {
 						return fmt.Errorf("read job data file: %w", err)
 					}
@@ -270,6 +274,28 @@ func run() (err error) {
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
 					noCommand := cCtx.Bool("no-command")
 					if err := spanner.Tent(bs, cmdline, noCommand); err != nil {
+						return fmt.Errorf("tent: %w", err)
+					}
+					return nil
+				},
+			},
+			{
+				Name:  "proxy",
+				Usage: "run service proxy",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "addr",
+						Value: "localhost:9100",
+						Usage: "",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+					addr := cCtx.String("addr")
+
+					if err := spanner.Proxy(bs, addr); err != nil {
 						return fmt.Errorf("tent: %w", err)
 					}
 					return nil

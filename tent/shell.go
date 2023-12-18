@@ -8,8 +8,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -68,7 +68,7 @@ func writeTokenFile() (token, filename string, err error) {
 	}
 	filename = filepath.Join(cwd, ".spanner-token")
 	token = generateToken()
-	err = ioutil.WriteFile(filename, []byte(token), 0600)
+	err = os.WriteFile(filename, []byte(token), 0600)
 	if err != nil {
 		return "", "", fmt.Errorf("writing token file: %w", err)
 	}
@@ -151,7 +151,7 @@ func shellIsPresent() bool {
 	return true
 }
 
-func RunShellServer() error {
+func RunShellServer(nodeHead chan struct{}) error {
 	if shellIsPresent() {
 		return nil
 	}
@@ -161,10 +161,17 @@ func RunShellServer() error {
 		Handler:                    sessionHandler,
 		KeyboardInteractiveHandler: kiHandler,
 	}
-
-	err := server.ListenAndServe()
+	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
-		return fmt.Errorf("listen and serve ssh: %w", err)
+		return fmt.Errorf("shell listen: %w", err)
+	}
+
+	// Mark this instance as the node head
+	close(nodeHead)
+
+	err = server.Serve(listener)
+	if err != nil {
+		return fmt.Errorf("serve ssh: %w", err)
 	}
 	return nil
 }

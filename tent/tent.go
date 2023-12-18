@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -50,7 +49,6 @@ func (p *Process) Wait() error {
 }
 
 func RunCommand(cmdline []string, vars Variables) (*Process, error) {
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	for i, arg := range cmdline {
 		var err error
 		cmdline[i], err = ExecTemplate(arg, vars)

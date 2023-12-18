@@ -94,11 +94,12 @@ func ListJobs(bs BatchSystem, request ListRequest) error {
 		return jobList[i].Name < jobList[j].Name
 	})
 
-	if request.MachineReadable {
+	switch {
+	case request.MachineReadable:
 		if err := json.NewEncoder(os.Stdout).Encode(jobList); err != nil {
 			return fmt.Errorf("encode list: %w", err)
 		}
-	} else {
+	default:
 		if err := showTable(jobList, request.Full); err != nil {
 			return fmt.Errorf("show table: %w", err)
 		}

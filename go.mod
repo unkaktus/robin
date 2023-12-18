@@ -5,7 +5,9 @@ go 1.19
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/creack/pty v1.1.18
+	github.com/elazarl/goproxy v0.0.0-20231117061959-7cc037d33fb5
 	github.com/gliderlabs/ssh v0.3.5
+	github.com/gorilla/mux v1.8.1
 	github.com/hpcloud/tail v1.0.0
 	github.com/matryer/is v1.4.0
 	github.com/rs/zerolog v1.31.0

@@ -2,9 +2,11 @@ package spanner
 
 import (
 	"fmt"
-	"log"
+	"io"
+	"os/exec"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"github.com/unkaktus/spanner/tent"
 )
 
@@ -15,18 +17,29 @@ const (
 
 func Tent(bs BatchSystem, cmdline []string, noCommand bool) error {
 	tentVariables := bs.TentVariables()
+	nodeHead := make(chan struct{})
 
 	go func() {
 		var err error
 		for retry := 0; retry < maxRetries; retry++ {
-			if err = tent.RunShellServer(); err != nil {
+			if err = tent.RunShellServer(nodeHead); err != nil {
 				time.Sleep(retryDelay)
 				continue
 			}
 			break
 		}
 		if err != nil {
-			log.Printf("spanner: could not start shell server: %v", err)
+			log.Err(err).Msg("spanner: could not start shell server")
+		}
+	}()
+
+	go func() {
+		<-nodeHead
+		cmd := exec.Command("node_exporter")
+		cmd.Stdout = io.Discard
+		cmd.Stderr = io.Discard
+		if err := cmd.Run(); err != nil {
+			log.Err(err).Msg("run node head")
 		}
 	}()
 
