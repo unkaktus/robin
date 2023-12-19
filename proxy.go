@@ -59,17 +59,12 @@ func PrometheusTargetsHandler(bs BatchSystem) http.HandlerFunc {
 	}
 }
 
-func NodeMetricsHandler(bs BatchSystem) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		proxy := goproxy.NewProxyHttpServer()
-		proxy.ServeHTTP(w, r)
-	}
-}
-
 func Proxy(bs BatchSystem, addr string) error {
+	proxy := goproxy.NewProxyHttpServer()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/targets", PrometheusTargetsHandler(bs))
-	r.PathPrefix("/").Handler(NodeMetricsHandler(bs))
+	r.PathPrefix("/").Handler(proxy)
 
 	log.Info().Msgf("starting proxy server at %s", addr)
 	if err := http.ListenAndServe(addr, r); err != nil {
