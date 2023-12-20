@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/hpcloud/tail"
 	"github.com/rs/zerolog"
@@ -71,6 +72,14 @@ func Logtail(b BatchSystem, jobName, outputType string, nBytes int) error {
 
 	consoleWriter := zerolog.ConsoleWriter{
 		Out: os.Stdout,
+		PartsOrder: []string{
+			zerolog.TimestampFieldName,
+			zerolog.LevelFieldName,
+			"stream",
+			zerolog.MessageFieldName,
+		},
+		TimeFormat:    time.DateTime,
+		FieldsExclude: []string{"stream"},
 	}
 	t, err := tail.TailFile(logFile, tailConfig)
 
