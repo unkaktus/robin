@@ -124,7 +124,7 @@ func LatestJob(bs BatchSystem) (*Job, error) {
 }
 
 func findJob(b BatchSystem, jobName string) (job Job, err error) {
-	jobList, err := b.ListJobs(true)
+	jobList, err := b.ListJobs(false)
 	if err != nil {
 		return job, fmt.Errorf("list jobs: %w", err)
 	}
