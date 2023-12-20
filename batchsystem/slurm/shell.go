@@ -2,17 +2,9 @@ package slurm
 
 import (
 	"fmt"
-	"os/exec"
-	"strings"
 
 	"github.com/unkaktus/spanner"
 )
-
-func isSupermuc() bool {
-	cmd := exec.Command("hostname", "-d")
-	combi, _ := cmd.CombinedOutput()
-	return strings.Contains(string(combi), "sng.lrz.de")
-}
 
 func (b *Slurm) Shell(jobName string, nodeID int) error {
 	// In case it is SuperMUC, set opa route
@@ -30,9 +22,7 @@ func (b *Slurm) Shell(jobName string, nodeID int) error {
 			}
 			node := job.Nodes[nodeID]
 
-			if isSupermuc() {
-				node += "opa"
-			}
+			node = spanner.RewriteNode(node)
 
 			if err := spanner.Shell(node); err != nil {
 				return fmt.Errorf("connect via ssh: %w", err)

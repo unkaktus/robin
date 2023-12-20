@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os/exec"
-	"strings"
 
 	"github.com/elazarl/goproxy"
 	"github.com/gorilla/mux"
@@ -21,12 +19,6 @@ type Target struct {
 	Targets []string          `json:"targets"`
 }
 
-func isSupermuc() bool {
-	cmd := exec.Command("hostname", "-d")
-	combi, _ := cmd.CombinedOutput()
-	return strings.Contains(string(combi), "sng.lrz.de")
-}
-
 func jobListToTargets(jobList []Job) []Target {
 	targets := []Target{}
 	for _, job := range jobList {
@@ -40,9 +32,7 @@ func jobListToTargets(jobList []Job) []Target {
 			Targets: []string{},
 		}
 		for _, node := range job.Nodes {
-			if isSupermuc() {
-				node += "opa"
-			}
+			node = RewriteNode(node)
 			nodeURL := fmt.Sprintf("%s:%d", node, defaultNodeExporterPort)
 			target.Targets = append(target.Targets, nodeURL)
 		}
