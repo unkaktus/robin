@@ -27,7 +27,7 @@ func jobListToTargets(jobList []Job) []Target {
 		}
 		target := Target{
 			Labels: map[string]string{
-				"job": job.Name,
+				"spanner_job": job.Name,
 			},
 			Targets: []string{},
 		}
