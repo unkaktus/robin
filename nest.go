@@ -1,4 +1,4 @@
-package spanner
+package robin
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/unkaktus/spanner/tent"
+	"github.com/unkaktus/robin/nest"
 )
 
 const (
@@ -15,21 +15,21 @@ const (
 	retryDelay time.Duration = 1 * time.Second
 )
 
-func Tent(bs BatchSystem, cmdline []string, noCommand bool) error {
-	tentVariables := bs.TentVariables()
+func Nest(bs BatchSystem, cmdline []string, noCommand bool) error {
+	NestVariables := bs.NestVariables()
 	nodeHead := make(chan struct{})
 
 	go func() {
 		var err error
 		for retry := 0; retry < maxRetries; retry++ {
-			if err = tent.RunShellServer(nodeHead); err != nil {
+			if err = nest.RunShellServer(nodeHead); err != nil {
 				time.Sleep(retryDelay)
 				continue
 			}
 			break
 		}
 		if err != nil {
-			log.Err(err).Msg("spanner: could not start shell server")
+			log.Err(err).Msg("robin: could not start shell server")
 		}
 	}()
 
@@ -46,7 +46,7 @@ func Tent(bs BatchSystem, cmdline []string, noCommand bool) error {
 	if noCommand {
 		select {}
 	} else {
-		process, err := tent.RunCommand(cmdline, tentVariables)
+		process, err := nest.RunCommand(cmdline, NestVariables)
 		if err != nil {
 			return fmt.Errorf("running command: %w", err)
 		}

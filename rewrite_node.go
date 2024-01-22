@@ -1,4 +1,4 @@
-package spanner
+package robin
 
 import (
 	"os/exec"

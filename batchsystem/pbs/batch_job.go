@@ -3,7 +3,7 @@ package pbs
 import (
 	"fmt"
 
-	"github.com/unkaktus/spanner/batchsystem"
+	"github.com/unkaktus/robin/batchsystem"
 )
 
 func (b *PBS) JobData(job batchsystem.Job) (string, error) {

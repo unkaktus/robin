@@ -1,7 +1,7 @@
 context:
   version: 1.1.0
 package:
-  name: "spanner"
+  name: "robin"
   version: '{{ version }}'
 
 source:
@@ -13,4 +13,4 @@ requirements:
 
 build:
   script:
-    - env CGO_ENABLED=0 go build -o ${PREFIX}/bin/spanner ./cmd/spanner
+    - env CGO_ENABLED=0 go build -o ${PREFIX}/bin/robin ./cmd/robin

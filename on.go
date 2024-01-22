@@ -1,4 +1,4 @@
-package spanner
+package robin
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ func On(machine string, cmdline []string) error {
 		"-tt",
 		"-q",
 		machine,
-		fmt.Sprintf("$SHELL -l -c 'spanner %s'", strings.Join(cmdline, " ")),
+		fmt.Sprintf("$SHELL -l -c 'robin %s'", strings.Join(cmdline, " ")),
 	}...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

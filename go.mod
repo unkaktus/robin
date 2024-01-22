@@ -1,4 +1,4 @@
-module github.com/unkaktus/spanner
+module github.com/unkaktus/robin
 
 go 1.19
 

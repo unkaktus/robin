@@ -9,10 +9,10 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/unkaktus/spanner"
-	"github.com/unkaktus/spanner/batchsystem"
-	"github.com/unkaktus/spanner/batchsystem/pbs"
-	"github.com/unkaktus/spanner/batchsystem/slurm"
+	"github.com/unkaktus/robin"
+	"github.com/unkaktus/robin/batchsystem"
+	"github.com/unkaktus/robin/batchsystem/pbs"
+	"github.com/unkaktus/robin/batchsystem/slurm"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,7 +23,7 @@ var (
 func run() (err error) {
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 
-	var bs spanner.BatchSystem
+	var bs robin.BatchSystem
 
 	switch batchsystem.DetectBatchSystem() {
 	case batchsystem.BatchPBS:
@@ -33,8 +33,8 @@ func run() (err error) {
 	}
 
 	app := &cli.App{
-		Name:     "spanner",
-		HelpName: "spanner",
+		Name:     "robin",
+		HelpName: "robin",
 		Usage:    "One tool for all HPC",
 		Authors: []*cli.Author{
 			&cli.Author{
@@ -74,13 +74,13 @@ func run() (err error) {
 						return errUnsupported
 					}
 
-					listRequest := spanner.ListRequest{
+					listRequest := robin.ListRequest{
 						All:             cCtx.Bool("all"),
 						Full:            cCtx.Bool("full"),
 						MachineReadable: cCtx.Bool("json"),
 						State:           strings.ToUpper(cCtx.String("state")),
 					}
-					if err := spanner.ListJobs(bs, listRequest); err != nil {
+					if err := robin.ListJobs(bs, listRequest); err != nil {
 						return fmt.Errorf("list error: %w", err)
 					}
 					return nil
@@ -117,7 +117,7 @@ func run() (err error) {
 					}
 					jobName := cCtx.Args().Get(0)
 					if cCtx.Bool("latest") {
-						job, err := spanner.LatestJob(bs)
+						job, err := robin.LatestJob(bs)
 						if err != nil {
 							return fmt.Errorf("looking up the latest job: %w", err)
 						}
@@ -129,12 +129,12 @@ func run() (err error) {
 					}
 					switch cCtx.Bool("f") {
 					case false:
-						if err := spanner.Logs(bs, jobName, outputType); err != nil {
+						if err := robin.Logs(bs, jobName, outputType); err != nil {
 							return fmt.Errorf("logs error: %w", err)
 						}
 					case true:
 						nBytes := cCtx.Int("n")
-						if err := spanner.Logtail(bs, jobName, outputType, nBytes); err != nil {
+						if err := robin.Logtail(bs, jobName, outputType, nBytes); err != nil {
 							return fmt.Errorf("logs error: %w", err)
 						}
 					}
@@ -163,7 +163,7 @@ func run() (err error) {
 					}
 
 					configFilename := cCtx.Args().Get(0)
-					if err := spanner.Begin(bs, cCtx.String("f"), configFilename, cCtx.Bool("dry")); err != nil {
+					if err := robin.Begin(bs, cCtx.String("f"), configFilename, cCtx.Bool("dry")); err != nil {
 						return fmt.Errorf("begin: %w", err)
 					}
 					return nil
@@ -207,7 +207,7 @@ func run() (err error) {
 
 					jobName := cCtx.Args().First()
 					if cCtx.Bool("latest") {
-						job, err := spanner.LatestJob(bs)
+						job, err := robin.LatestJob(bs)
 						if err != nil {
 							return fmt.Errorf("looking up the latest job: %w", err)
 						}
@@ -236,7 +236,7 @@ func run() (err error) {
 
 					jobName := cCtx.Args().Get(0)
 					if cCtx.Bool("latest") {
-						job, err := spanner.LatestJob(bs)
+						job, err := robin.LatestJob(bs)
 						if err != nil {
 							return fmt.Errorf("looking up the latest job: %w", err)
 						}
@@ -257,13 +257,13 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:  "tent",
-				Usage: "run tent",
+				Name:  "nest",
+				Usage: "run nest",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "no-command",
 						Value: false,
-						Usage: "start tent without any command",
+						Usage: "start nest without any command",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
@@ -273,8 +273,8 @@ func run() (err error) {
 
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
 					noCommand := cCtx.Bool("no-command")
-					if err := spanner.Tent(bs, cmdline, noCommand); err != nil {
-						return fmt.Errorf("tent: %w", err)
+					if err := robin.Nest(bs, cmdline, noCommand); err != nil {
+						return fmt.Errorf("nest: %w", err)
 					}
 					return nil
 				},
@@ -295,20 +295,20 @@ func run() (err error) {
 					}
 					addr := cCtx.String("addr")
 
-					if err := spanner.Proxy(bs, addr); err != nil {
-						return fmt.Errorf("tent: %w", err)
+					if err := robin.Proxy(bs, addr); err != nil {
+						return fmt.Errorf("nest: %w", err)
 					}
 					return nil
 				},
 			},
 			{
 				Name:  "on",
-				Usage: "run spanner commands remotely, e.g., spanner on machine list",
+				Usage: "run robin commands remotely, e.g., robin on machine list",
 				Action: func(cCtx *cli.Context) error {
 					machine := cCtx.Args().First()
 					cmdline := cCtx.Args().Tail()
-					if err := spanner.On(machine, cmdline); err != nil {
-						return fmt.Errorf("spanner on remote: %w", err)
+					if err := robin.On(machine, cmdline); err != nil {
+						return fmt.Errorf("robin on remote: %w", err)
 					}
 					return nil
 				},
@@ -348,7 +348,7 @@ func run() (err error) {
 					if machine == "" {
 						return fmt.Errorf("machine must be specified")
 					}
-					if err := spanner.PortForward(machine, jobName, port, nodeID); err != nil {
+					if err := robin.PortForward(machine, jobName, port, nodeID); err != nil {
 						return fmt.Errorf("ssh error: %w", err)
 					}
 					return nil
@@ -361,7 +361,7 @@ func run() (err error) {
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "spanner: %v\n", err)
+		fmt.Fprintf(os.Stderr, "robin: %v\n", err)
 		os.Exit(1)
 	}
 }

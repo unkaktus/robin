@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/unkaktus/spanner/batchsystem"
+	"github.com/unkaktus/robin/batchsystem"
 )
 
 func (b *Slurm) JobData(job batchsystem.Job) (string, error) {
@@ -39,7 +39,7 @@ func (b *Slurm) JobData(job batchsystem.Job) (string, error) {
 	}
 
 	task := []string{
-		"srun", "spanner", "tent",
+		"srun", "robin", "nest",
 	}
 
 	task = append(task, job.Runtime...)

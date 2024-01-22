@@ -1,17 +1,17 @@
-package spanner
+package robin
 
 import (
 	"time"
 
-	"github.com/unkaktus/spanner/batchsystem"
-	"github.com/unkaktus/spanner/tent"
+	"github.com/unkaktus/robin/batchsystem"
+	"github.com/unkaktus/robin/nest"
 )
 
 type BatchSystem interface {
 	ListJobs(all bool) ([]Job, error)
 	Shell(jobName string, nodeID int) error
 	Cancel(jobName string) error
-	TentVariables() tent.Variables
+	NestVariables() nest.Variables
 	JobData(batchsystem.Job) (string, error)
 	Submit(jobData string) error
 }

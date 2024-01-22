@@ -3,7 +3,7 @@ package slurm
 import (
 	"fmt"
 
-	"github.com/unkaktus/spanner"
+	"github.com/unkaktus/robin"
 )
 
 func (b *Slurm) Shell(jobName string, nodeID int) error {
@@ -22,9 +22,9 @@ func (b *Slurm) Shell(jobName string, nodeID int) error {
 			}
 			node := job.Nodes[nodeID]
 
-			node = spanner.RewriteNode(node)
+			node = robin.RewriteNode(node)
 
-			if err := spanner.Shell(node); err != nil {
+			if err := robin.Shell(node); err != nil {
 				return fmt.Errorf("connect via ssh: %w", err)
 			}
 			break

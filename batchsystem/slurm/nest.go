@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/unkaktus/spanner/tent"
+	"github.com/unkaktus/robin/nest"
 )
 
 func getTaskID() (int, error) {
@@ -34,8 +34,8 @@ func getTotalTaskNumber() (totalTaskNumber int, err error) {
 	return totalTaskNumber, nil
 }
 
-func (b *Slurm) TentVariables() tent.Variables {
-	vars := tent.Variables{}
+func (b *Slurm) NestVariables() nest.Variables {
+	vars := nest.Variables{}
 	if taskID, err := getTaskID(); err == nil {
 		vars.TaskID = taskID
 	}

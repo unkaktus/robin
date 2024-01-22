@@ -1,4 +1,4 @@
-package spanner
+package robin
 
 import (
 	"encoding/json"
@@ -27,7 +27,7 @@ func jobListToTargets(jobList []Job) []Target {
 		}
 		target := Target{
 			Labels: map[string]string{
-				"spanner_job": job.Name,
+				"robin_job": job.Name,
 			},
 			Targets: []string{},
 		}
@@ -50,7 +50,7 @@ func PrometheusTargetsHandler(bs BatchSystem) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Connest-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		targets := jobListToTargets(jobList)
 		if err := json.NewEncoder(w).Encode(targets); err != nil {

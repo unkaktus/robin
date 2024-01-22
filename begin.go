@@ -1,12 +1,12 @@
-package spanner
+package robin
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	"github.com/unkaktus/spanner/batchsystem"
-	"github.com/unkaktus/spanner/begin"
+	"github.com/unkaktus/robin/batchsystem"
+	"github.com/unkaktus/robin/begin"
 )
 
 func Begin(b BatchSystem, beginFilename, configFilename string, dryRun bool) error {

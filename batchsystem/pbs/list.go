@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/unkaktus/spanner"
+	"github.com/unkaktus/robin"
 )
 
 type ListOutput struct {
@@ -88,7 +88,7 @@ func filePath(path string) string {
 	return sp[1]
 }
 
-func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error) {
+func listOutputToJobList(listOutput *ListOutput) (jobs []robin.Job, err error) {
 	for jobID, listedJob := range listOutput.Jobs {
 		var creationTime time.Time
 		if listedJob.CreationTime != "" {
@@ -123,7 +123,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 			return nil, fmt.Errorf("parsing RequestedWalltime: %w", err)
 		}
 
-		job := spanner.Job{
+		job := robin.Job{
 			Name:              listedJob.Name,
 			ID:                jobID,
 			Queue:             listedJob.Queue,
@@ -145,7 +145,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []spanner.Job, err error)
 	return jobs, nil
 }
 
-func (b *PBS) ListJobs(all bool) ([]spanner.Job, error) {
+func (b *PBS) ListJobs(all bool) ([]robin.Job, error) {
 	listOutput, err := query()
 	if err != nil {
 		return nil, fmt.Errorf("query list: %w", err)
@@ -159,7 +159,7 @@ func (b *PBS) ListJobs(all bool) ([]spanner.Job, error) {
 	return jobList, nil
 }
 
-func (b *PBS) FindJob(jobName string) (*spanner.Job, error) {
+func (b *PBS) FindJob(jobName string) (*robin.Job, error) {
 	jobList, err := b.ListJobs(false)
 	if err != nil {
 		return nil, fmt.Errorf("list jobs: %w", err)

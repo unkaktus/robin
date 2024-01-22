@@ -10,15 +10,15 @@ func TestJobNameFromJobData(t *testing.T) {
 	is := is.New(t)
 
 	jobData := `#!/bin/bash
-	#SBATCH -o spanner.out
+	#SBATCH -o robin.out
 	#SBATCH -n 72
 	#SBATCH -t 24:00:00
 	#SBATCH --mem=256000
 
-	#SBATCH -J spanner_job_name
+	#SBATCH -J robin_job_name
 
-	spanner tent mpirun -n 72 application`
+	robin nest mpirun -n 72 application`
 
 	jobName := jobNameFromJobData(jobData)
-	is.Equal(jobName, "spanner_job_name")
+	is.Equal(jobName, "robin_job_name")
 }

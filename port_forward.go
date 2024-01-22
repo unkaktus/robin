@@ -1,4 +1,4 @@
-package spanner
+package robin
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ func findJobOnRemote(machine, jobName string) (*Job, error) {
 		"-tt",
 		"-q",
 		machine,
-		"$SHELL -l -c 'echo SPANNER; spanner list --json'",
+		"$SHELL -l -c 'echo robin; robin list --json'",
 	}...)
 	cmd.Stderr = os.Stderr
 	stdout := &strings.Builder{}
@@ -25,7 +25,7 @@ func findJobOnRemote(machine, jobName string) (*Job, error) {
 	}
 
 	// Filter login stuff out
-	output := strings.SplitAfterN(stdout.String(), "SPANNER", 2)
+	output := strings.SplitAfterN(stdout.String(), "robin", 2)
 	if len(output) != 2 {
 		log.Printf("data: %+v", output)
 		return nil, fmt.Errorf("wrong output length: %v", len(output))

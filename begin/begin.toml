@@ -9,7 +9,7 @@ TasksPerNode = 4
 NodeType = "rome"
 Queue = "test"
 
-Email = "spanner@unkaktus.art"
+Email = "robin@unkaktus.art"
 
 InitScript = [
     "module load apptainer"

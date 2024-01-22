@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/unkaktus/spanner"
+	"github.com/unkaktus/robin"
 )
 
 type ListedJob struct {
@@ -271,7 +271,7 @@ func parseExitCode(s string) (exitCode, signal int, err error) {
 	return exitCode, signal, nil
 }
 
-func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error) {
+func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 	for _, listedJob := range listedJobs {
 		exitCode, _, err := parseExitCode(listedJob.ExitCode)
 		if err != nil {
@@ -300,7 +300,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error)
 				return nil, fmt.Errorf("parse requested walltime: %w", err)
 			}
 		}
-		job := spanner.Job{
+		job := robin.Job{
 			Name:              listedJob.Name,
 			ID:                listedJob.ID,
 			Queue:             listedJob.Partition,
@@ -320,7 +320,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []spanner.Job, err error)
 	return jobs, nil
 }
 
-func (b *Slurm) ListJobs(all bool) ([]spanner.Job, error) {
+func (b *Slurm) ListJobs(all bool) ([]robin.Job, error) {
 	listOutput, err := query(all)
 	if err != nil {
 		return nil, fmt.Errorf("query list: %w", err)
@@ -334,7 +334,7 @@ func (b *Slurm) ListJobs(all bool) ([]spanner.Job, error) {
 	return jobList, nil
 }
 
-func (b *Slurm) FindJob(jobName string) (*spanner.Job, error) {
+func (b *Slurm) FindJob(jobName string) (*robin.Job, error) {
 	jobList, err := b.ListJobs(false)
 	if err != nil {
 		return nil, fmt.Errorf("list jobs: %w", err)

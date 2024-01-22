@@ -1,4 +1,4 @@
-package tent
+package nest
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ const (
 func UserPort() uint64 {
 	uid := os.Getuid()
 	h := sha256.New()
-	h.Write([]byte("spanner tent uid to port"))
+	h.Write([]byte("robin nest uid to port"))
 	binary.Write(h, binary.BigEndian, int64(uid))
 	hash := h.Sum(nil)
 	reader := bytes.NewReader(hash)
@@ -66,7 +66,7 @@ func writeTokenFile() (token, filename string, err error) {
 	if err != nil {
 		return "", "", fmt.Errorf("get current working directory: %w", err)
 	}
-	filename = filepath.Join(cwd, ".spanner-token")
+	filename = filepath.Join(cwd, ".robin-token")
 	token = generateToken()
 	err = os.WriteFile(filename, []byte(token), 0600)
 	if err != nil {
@@ -93,7 +93,7 @@ func kiHandler(ctx ssh.Context, challenger gossh.KeyboardInteractiveChallenge) b
 }
 
 func sessionHandler(s ssh.Session) {
-	io.WriteString(s, "Connected to spanner shell.\n")
+	io.WriteString(s, "Connected to robin shell.\n")
 	ptyReq, winCh, isPty := s.Pty()
 	if !isPty {
 		io.WriteString(s, "No PTY requested.\n")
