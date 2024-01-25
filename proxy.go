@@ -50,7 +50,7 @@ func PrometheusTargetsHandler(bs BatchSystem) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Connest-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		targets := jobListToTargets(jobList)
 		if err := json.NewEncoder(w).Encode(targets); err != nil {
