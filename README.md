@@ -139,3 +139,15 @@ Forward a port to the node of a job:
 $ robin port-forward -p 11111 -m supercomp compare_apples
 ```
 
+#### Changing directory to the job root
+
+You might want to add the following function to your `.bashrc`,
+that will bring you to the directory from which the job was submitted:
+
+```shell
+cdj () {
+        cd $(robin list --json | jq -r '.[] | select(.Name=="'$1'").WorkingDirectory')
+}
+```
+
+Note that it requires `jq`.
