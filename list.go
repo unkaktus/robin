@@ -73,7 +73,7 @@ func ListJobs(bs BatchSystem, request ListRequest) error {
 	for _, job := range jobList {
 		addedJob, ok := jobMap[job.Name]
 		if ok {
-			if job.CreationTime.After(addedJob.CreationTime) {
+			if job.CreationTime.Before(addedJob.CreationTime) {
 				jobMap[job.Name] = job
 			}
 		} else {
