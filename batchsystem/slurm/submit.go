@@ -1,11 +1,14 @@
 package slurm
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 	"unicode"
+
+	"github.com/unkaktus/robin"
 )
 
 func jobNameFromJobData(jobData string) string {
@@ -46,8 +49,12 @@ func (b *Slurm) Submit(jobData string) error {
 		return fmt.Errorf("job with this name already exists")
 	}
 
+	comment := robin.Comment{
+		JobData: base64.RawStdEncoding.EncodeToString([]byte(jobData)),
+	}
+
 	jobDataReader := strings.NewReader(jobData)
-	cmd := exec.Command("sbatch")
+	cmd := exec.Command("sbatch", "--comment", comment.Encode())
 	cmd.Stdin = jobDataReader
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

@@ -1,11 +1,14 @@
 package pbs
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 	"unicode"
+
+	"github.com/unkaktus/robin"
 )
 
 func jobNameFromJobData(jobData string) string {
@@ -46,8 +49,12 @@ func (b *PBS) Submit(jobData string) error {
 		return fmt.Errorf("job with this name already exists")
 	}
 
+	comment := robin.Comment{
+		JobData: base64.RawStdEncoding.EncodeToString([]byte(jobData)),
+	}
+
 	jobDataReader := strings.NewReader(jobData)
-	cmd := exec.Command("qsub")
+	cmd := exec.Command("qsub", "-v", fmt.Sprintf("robin_comment=%s", comment.Encode()))
 	cmd.Stdin = jobDataReader
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
