@@ -20,6 +20,7 @@ type ListedJob struct {
 	State            string
 	ExitCode         string
 	SubmitTime       string
+	StartTime        string
 	NodeList         string
 	NodeNumber       string
 	TimeUsed         string
@@ -62,6 +63,8 @@ func UnmarshalSqueueOutput(data []byte) (ListedJob, error) {
 	i += outlen
 	listedJob.SubmitTime = valueString(data, i)
 	i += outlen
+	listedJob.StartTime = valueString(data, i)
+	i += outlen
 	listedJob.NodeList = valueString(data, i)
 	i += outlen
 	listedJob.NodeNumber = valueString(data, i)
@@ -93,6 +96,7 @@ func query(all bool) ([]ListedJob, error) {
 		"StateCompact",
 		"exit_code",
 		"SubmitTime",
+		"StartTime",
 		"NodeList",
 		"NumNodes",
 		"TimeUsed",
@@ -285,6 +289,13 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("parse submit time: %w", err)
 		}
+		var startTime time.Time
+		if listedJob.StartTime != "N/A" {
+			startTime, err = time.Parse(TimeLayout, listedJob.StartTime)
+			if err != nil {
+				return nil, fmt.Errorf("parse submit time: %w", err)
+			}
+		}
 		nodes, err := parseNodeList(listedJob.NodeList)
 		if err != nil {
 			return nil, fmt.Errorf("parse nodelist: %w", err)
@@ -314,6 +325,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 			State:             listedJob.State,
 			ExitCode:          exitCode,
 			CreationTime:      creationTime,
+			StartTime:         startTime,
 			Nodes:             nodes,
 			NodeNumber:        nodeNumber,
 			Walltime:          walltime,

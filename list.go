@@ -12,6 +12,13 @@ import (
 	"github.com/unkaktus/tablewriter"
 )
 
+func roundToMinutes(d time.Duration) string {
+	if d == 0 {
+		return "0m"
+	}
+	return strings.TrimSuffix(d.Round(time.Minute).String(), "0s")
+}
+
 func showTable(jobList []Job, full bool) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetRoundedStyle()
@@ -26,11 +33,19 @@ func showTable(jobList []Job, full bool) error {
 		if job.RequestedWalltime == time.Duration(0) {
 			timeString = job.Walltime.String()
 		} else {
+			timeProgress := job.Walltime
+			if !job.StartTime.IsZero() {
+				// Time in the future indicates that this is the scheduled time
+				if job.StartTime.After(time.Now()) {
+					// Negative time progress
+					timeProgress = time.Since(job.StartTime)
+				}
+			}
 			timePercentage := int(100 * job.Walltime.Seconds() / job.RequestedWalltime.Seconds())
 			timeString = fmt.Sprintf("[%d%%] %s/%s",
 				timePercentage,
-				job.Walltime,
-				job.RequestedWalltime,
+				roundToMinutes(timeProgress),
+				roundToMinutes(job.RequestedWalltime),
 			)
 		}
 		if full {

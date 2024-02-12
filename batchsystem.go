@@ -23,6 +23,7 @@ type Job struct {
 	State             string
 	ExitCode          int
 	CreationTime      time.Time
+	StartTime         time.Time
 	Nodes             []string
 	NodeNumber        int
 	CPUNumber         int
