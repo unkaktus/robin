@@ -32,4 +32,5 @@ type Job struct {
 	OutputFile        string
 	ErrorFile         string
 	WorkingDirectory  string
+	Comment           string
 }

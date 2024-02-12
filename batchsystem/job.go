@@ -29,6 +29,8 @@ type Job struct {
 	Runtime    []string
 	Executable string
 	Arguments  []string
+
+	Comment string
 }
 
 func ExecTemplate(ts string, s interface{}) (string, error) {

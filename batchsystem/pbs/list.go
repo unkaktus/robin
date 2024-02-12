@@ -20,7 +20,8 @@ type ListOutput struct {
 		ErrorPath    string `json:"Error_Path"`
 		OutputPath   string `json:"Output_Path"`
 		VariableList struct {
-			WorkDir string `json:"PBS_O_WORKDIR"`
+			WorkDir      string `json:"PBS_O_WORKDIR"`
+			RobinComment string `json:"robin_comment"`
 		} `json:"Variable_List"`
 		ExitStatus    int `json:"Exit_status"`
 		ResourcesUsed struct {
@@ -139,6 +140,7 @@ func listOutputToJobList(listOutput *ListOutput) (jobs []robin.Job, err error) {
 			OutputFile:        filePath(listedJob.OutputPath),
 			ErrorFile:         filePath(listedJob.ErrorPath),
 			WorkingDirectory:  listedJob.VariableList.WorkDir,
+			Comment:           listedJob.VariableList.RobinComment,
 		}
 		jobs = append(jobs, job)
 	}

@@ -27,6 +27,7 @@ type ListedJob struct {
 	OutputFile       string
 	ErrorFile        string
 	WorkingDirectory string
+	Comment          string
 }
 
 const (
@@ -74,6 +75,8 @@ func UnmarshalSqueueOutput(data []byte) (ListedJob, error) {
 	listedJob.ErrorFile = valueString(data, i)
 	i += outlen
 	listedJob.WorkingDirectory = valueString(data, i)
+	i += outlen
+	listedJob.Comment = valueString(data, i)
 
 	return listedJob, nil
 }
@@ -97,6 +100,7 @@ func query(all bool) ([]ListedJob, error) {
 		"STDOUT",
 		"STDERR",
 		"WorkDir",
+		"Comment",
 	}
 	squeueArguments := []string{
 		"--noheader",
@@ -300,6 +304,9 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 				return nil, fmt.Errorf("parse requested walltime: %w", err)
 			}
 		}
+		if listedJob.Comment == "(null)" {
+			listedJob.Comment = ""
+		}
 		job := robin.Job{
 			Name:              listedJob.Name,
 			ID:                listedJob.ID,
@@ -314,6 +321,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 			OutputFile:        listedJob.OutputFile,
 			ErrorFile:         listedJob.ErrorFile,
 			WorkingDirectory:  listedJob.WorkingDirectory,
+			Comment:           listedJob.Comment,
 		}
 		jobs = append(jobs, job)
 	}
