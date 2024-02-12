@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/hpcloud/tail"
@@ -89,6 +90,10 @@ func Logtail(b BatchSystem, jobName, outputType string, nBytes int) error {
 		}
 		if line.Err != nil {
 			return fmt.Errorf("tail file: %w", err)
+		}
+		// If it is a cut JSON, skip it
+		if strings.HasSuffix(line.Text, "}") && !strings.HasPrefix(line.Text, "{") {
+			continue
 		}
 		if err = writeLine(consoleWriter, line.Text); err != nil {
 			return fmt.Errorf("write line: %w", err)
