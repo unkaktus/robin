@@ -1,10 +1,12 @@
 package pbs
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"unicode"
 
@@ -49,10 +51,27 @@ func (b *PBS) Submit(jobData string) error {
 		return fmt.Errorf("job with this name already exists")
 	}
 
-	comment := robin.Comment{
-		JobData: base64.RawStdEncoding.EncodeToString([]byte(jobData)),
+	// Write job data to a file
+	if err := os.MkdirAll(".robin/jobdata", 0700); err != nil {
+		return fmt.Errorf("cannot create .robin/jobdata directory: %w", err)
 	}
 
+	h := sha256.New()
+	h.Write([]byte(jobData))
+	hash := base64.RawURLEncoding.EncodeToString(h.Sum(nil))
+
+	jobDataFilename, err := filepath.Abs(filepath.Join(".robin/jobdata", hash))
+	if err != nil {
+		return fmt.Errorf("get absolute path for .robin/jobdata: %w", err)
+	}
+
+	if err := os.WriteFile(jobDataFilename, []byte(jobData), 0700); err != nil {
+		return fmt.Errorf("write job data file: %w", err)
+	}
+
+	comment := robin.Comment{
+		JobDataFilename: jobDataFilename,
+	}
 	jobDataReader := strings.NewReader(jobData)
 	cmd := exec.Command("qsub", "-v", fmt.Sprintf("robin_comment=%s", comment.Encode()))
 	cmd.Stdin = jobDataReader

@@ -7,11 +7,11 @@ import (
 )
 
 type Comment struct {
-	JobData string `json:"job_data"`
+	JobDataFilename string `json:"job_data_filename"`
 }
 
 func (c *Comment) IsEmpty() bool {
-	return c.JobData == ""
+	return c.JobDataFilename == ""
 }
 
 func (c *Comment) Encode() string {
