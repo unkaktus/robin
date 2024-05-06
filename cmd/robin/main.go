@@ -265,6 +265,11 @@ func run() (err error) {
 						Value: false,
 						Usage: "start nest without any command",
 					},
+					&cli.BoolFlag{
+						Name:  "verbose",
+						Value: false,
+						Usage: "print misc errors (shell, node head)",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
@@ -273,7 +278,8 @@ func run() (err error) {
 
 					cmdline := append([]string{cCtx.Args().First()}, cCtx.Args().Tail()...)
 					noCommand := cCtx.Bool("no-command")
-					if err := robin.Nest(bs, cmdline, noCommand); err != nil {
+					verbose := cCtx.Bool("verbose")
+					if err := robin.Nest(bs, cmdline, noCommand, verbose); err != nil {
 						return fmt.Errorf("nest: %w", err)
 					}
 					return nil

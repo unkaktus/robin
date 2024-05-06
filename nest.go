@@ -15,7 +15,7 @@ const (
 	retryDelay time.Duration = 1 * time.Second
 )
 
-func Nest(bs BatchSystem, cmdline []string, noCommand bool) error {
+func Nest(bs BatchSystem, cmdline []string, noCommand, verbose bool) error {
 	NestVariables := bs.NestVariables()
 	nodeHead := make(chan struct{})
 
@@ -29,7 +29,9 @@ func Nest(bs BatchSystem, cmdline []string, noCommand bool) error {
 			break
 		}
 		if err != nil {
-			log.Err(err).Msg("robin: could not start shell server")
+			if verbose {
+				log.Err(err).Msg("robin: could not start shell server")
+			}
 		}
 	}()
 
@@ -39,7 +41,9 @@ func Nest(bs BatchSystem, cmdline []string, noCommand bool) error {
 		cmd.Stdout = io.Discard
 		cmd.Stderr = io.Discard
 		if err := cmd.Run(); err != nil {
-			log.Err(err).Msg("run node head")
+			if verbose {
+				log.Err(err).Msg("run node head")
+			}
 		}
 	}()
 
