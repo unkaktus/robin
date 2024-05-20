@@ -295,7 +295,7 @@ func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 		}
 		var startTime time.Time
 		if listedJob.StartTime != "N/A" {
-			startTime, err = time.Parse(TimeLayout, listedJob.StartTime)
+			startTime, err = time.ParseInLocation(TimeLayout, listedJob.StartTime, time.Local)
 			if err != nil {
 				return nil, fmt.Errorf("parse submit time: %w", err)
 			}
