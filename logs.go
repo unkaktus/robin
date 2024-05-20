@@ -83,6 +83,9 @@ func Logtail(b BatchSystem, jobName, outputType string, nBytes int) error {
 		FieldsExclude: []string{"stream"},
 	}
 	t, err := tail.TailFile(logFile, tailConfig)
+	if err != nil {
+		return fmt.Errorf("tail file: %w", err)
+	}
 
 	for line := range t.Lines {
 		if line.Err == io.EOF {
