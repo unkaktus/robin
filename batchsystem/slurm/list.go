@@ -281,6 +281,10 @@ func parseExitCode(s string) (exitCode, signal int, err error) {
 
 func listOutputToJobList(listedJobs []ListedJob) (jobs []robin.Job, err error) {
 	for _, listedJob := range listedJobs {
+		// Do not consider stuck jobs
+		if listedJob.State == "CG" {
+			continue
+		}
 		exitCode, _, err := parseExitCode(listedJob.ExitCode)
 		if err != nil {
 			return nil, fmt.Errorf("parse exit code: %w", err)
