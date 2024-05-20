@@ -171,19 +171,14 @@ func run() (err error) {
 			},
 			{
 				Name:  "submit",
-				Usage: "submit a job file without magic",
-
+				Usage: "submit a job",
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
 						return errUnsupported
 					}
 
-					jobDataFilename := cCtx.Args().First()
-					jobData, err := os.ReadFile(jobDataFilename)
-					if err != nil {
-						return fmt.Errorf("read job data file: %w", err)
-					}
-					if err := bs.Submit(string(jobData)); err != nil {
+					name := cCtx.Args().First()
+					if err := robin.Submit(bs, name); err != nil {
 						return fmt.Errorf("submit: %w", err)
 					}
 					return nil
