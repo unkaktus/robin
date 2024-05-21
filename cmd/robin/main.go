@@ -3,10 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/minio/selfupdate"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/unkaktus/robin"
@@ -352,6 +355,28 @@ func run() (err error) {
 					if err := robin.PortForward(machine, jobName, port, nodeID); err != nil {
 						return fmt.Errorf("ssh error: %w", err)
 					}
+					return nil
+				},
+			},
+			{
+				Name:  "update",
+				Usage: "update itself",
+				Action: func(cCtx *cli.Context) error {
+					robinURL := fmt.Sprintf("https://github.com/unkaktus/robin/releases/latest/download/robin-%s-%s", runtime.GOOS, runtime.GOARCH)
+					resp, err := http.Get(robinURL)
+					if err != nil {
+						return fmt.Errorf("download release binary: %w", err)
+					}
+					if resp.StatusCode != http.StatusOK {
+						return fmt.Errorf("unsuccessful download: status %s", resp.Status)
+					}
+					fmt.Printf("Downloaded new binary.\n")
+					defer resp.Body.Close()
+					err = selfupdate.Apply(resp.Body, selfupdate.Options{})
+					if err != nil {
+						return fmt.Errorf("apply update: %w", err)
+					}
+					fmt.Printf("Successfully applied the update.\n")
 					return nil
 				},
 			},
