@@ -13,7 +13,7 @@ import (
 )
 
 func roundToMinutes(d time.Duration) string {
-	if d == 0 {
+	if d == 0 || d < time.Minute {
 		return "0m"
 	}
 	return strings.TrimSuffix(d.Round(time.Minute).String(), "0s")
@@ -31,7 +31,7 @@ func showTable(jobList []Job, full bool) error {
 	for _, job := range jobList {
 		timeString := ""
 		if job.RequestedWalltime == time.Duration(0) {
-			timeString = job.Walltime.String()
+			timeString = roundToMinutes(job.Walltime)
 		} else {
 			timeProgress := job.Walltime
 			if !job.StartTime.IsZero() {
