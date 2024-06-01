@@ -9,5 +9,8 @@ func DetectBatchSystem() string {
 	if _, err := exec.LookPath("squeue"); err == nil {
 		return BatchSlurm
 	}
+	if _, err := exec.LookPath("tmux"); err == nil {
+		return BatchTmux
+	}
 	return BatchUnsupported
 }

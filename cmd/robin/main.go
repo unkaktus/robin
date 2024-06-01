@@ -16,6 +16,7 @@ import (
 	"github.com/unkaktus/robin/batchsystem"
 	"github.com/unkaktus/robin/batchsystem/pbs"
 	"github.com/unkaktus/robin/batchsystem/slurm"
+	"github.com/unkaktus/robin/batchsystem/tmux"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,6 +34,8 @@ func run() (err error) {
 		bs = &pbs.PBS{}
 	case batchsystem.BatchSlurm:
 		bs = &slurm.Slurm{}
+	case batchsystem.BatchTmux:
+		bs = &tmux.Tmux{}
 	}
 
 	app := &cli.App{
