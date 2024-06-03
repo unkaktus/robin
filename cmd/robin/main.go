@@ -386,6 +386,14 @@ func run() (err error) {
 					return nil
 				},
 			},
+			{
+				Name:  "which",
+				Usage: "print the detected batch system types",
+				Action: func(cCtx *cli.Context) error {
+					fmt.Println(batchsystem.DetectBatchSystem())
+					return nil
+				},
+			},
 		},
 	}
 	return app.Run(os.Args)
