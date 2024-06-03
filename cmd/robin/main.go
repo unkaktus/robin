@@ -37,6 +37,9 @@ func run() (err error) {
 	case batchsystem.BatchTmux:
 		bs = &tmux.Tmux{}
 	}
+	if err := bs.Init(); err != nil {
+		log.Fatal().Err(err).Msg("initialize tmux")
+	}
 
 	app := &cli.App{
 		Name:     "robin",

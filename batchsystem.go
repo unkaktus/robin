@@ -8,6 +8,7 @@ import (
 )
 
 type BatchSystem interface {
+	Init() error
 	ListJobs(all bool) ([]Job, error)
 	Shell(jobName string, nodeID int) error
 	Cancel(jobName string) error

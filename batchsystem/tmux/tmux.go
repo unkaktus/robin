@@ -4,10 +4,18 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"os/exec"
 	"strings"
 )
 
 type Tmux struct {
+}
+
+func (tm *Tmux) Init() error {
+	if err := exec.Command("tmux", "new-session", "-d", "tmux set-option exit-empty off").Run(); err != nil {
+		return fmt.Errorf("start tmux server: %w", err)
+	}
+	return nil
 }
 
 type NameData struct {
@@ -19,7 +27,7 @@ func (nd *NameData) DecodeString(s string) error {
 	nameDataEndcoded := strings.TrimPrefix(s, "robin_")
 	nameDataDecoded, err := base64.RawURLEncoding.DecodeString(nameDataEndcoded)
 	if err != nil {
-		return fmt.Errorf("decode base64 :%w", err)
+		return fmt.Errorf("decode base64: %w", err)
 	}
 	err = json.Unmarshal(nameDataDecoded, nd)
 	if err != nil {
