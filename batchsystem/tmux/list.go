@@ -37,14 +37,17 @@ func query() (ListOutput, error) {
 
 func listOutputToJobList(listOutput ListOutput) (jobs []robin.Job, err error) {
 	for _, listedJob := range listOutput {
-		ID := strings.TrimPrefix(listedJob.ID, "$")
-		creationTime := time.Unix(listedJob.CreationTime, 0)
-
+		if !strings.HasPrefix(listedJob.Name, "robin_") {
+			continue
+		}
 		nameData := &NameData{}
 		err = nameData.DecodeString(listedJob.Name)
 		if err != nil {
 			return nil, fmt.Errorf("decode name data: %w", err)
 		}
+
+		ID := strings.TrimPrefix(listedJob.ID, "$")
+		creationTime := time.Unix(listedJob.CreationTime, 0)
 
 		job := robin.Job{
 			Name:             nameData.Name,
