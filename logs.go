@@ -60,15 +60,27 @@ func Logtail(b BatchSystem, jobName, outputType string, nBytes int) error {
 		logFile = job.ErrorFile
 	}
 
+	location := &tail.SeekInfo{
+		Offset: 0,
+		Whence: io.SeekStart,
+	}
+
+	// If the file exists and it is large enough, truncate by seeking
+	if fi, err := os.Stat(logFile); err == nil {
+		if fi.Size() > int64(nBytes) {
+			location = &tail.SeekInfo{
+				Offset: -int64(nBytes),
+				Whence: io.SeekEnd,
+			}
+		}
+	}
+
 	tailConfig := tail.Config{
-		Follow: true,
-		ReOpen: true,
-		Poll:   true, // On many cluster filesystems, inotify doesn't work
-		Location: &tail.SeekInfo{
-			Offset: -int64(nBytes),
-			Whence: io.SeekEnd,
-		},
-		Logger: tail.DiscardingLogger,
+		Follow:   true,
+		ReOpen:   true,
+		Poll:     true, // On many cluster filesystems, inotify doesn't work
+		Location: location,
+		Logger:   tail.DiscardingLogger,
 	}
 
 	consoleWriter := zerolog.ConsoleWriter{
