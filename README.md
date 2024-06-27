@@ -2,36 +2,24 @@
 
 `robin` is a tool for easy job managment on HPC like referencing by name, logging, logging into nodes.
 
-Works across Slurm and PBSPro.
+Works on Slurm, PBSPro, and tmux.
 
-### Easy installation using Mamba
-
-Install MambaForge on your cluster. In case you don't
-have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
-
-Then, install `robin` itself:
-```shell
-mamba install -c https://mamba.unkaktus.art robin
-```
 
 ### Installation using Go
 
-0. Install MambaForge on your cluster. In case you don't
-have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
+0. In case you don't have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
 
-1. Install Go
+1.
 ```shell
-mamba install go
+curl -L -o robin https://github.com/unkaktus/robin/releases/latest/download/robin-linux-amd64
+mkdir -p ~/bin
+mv robin ~/bin/
+chmod +x ~/bin/robin
 ```
 
-2. Install `robin`:
+3. Add `$HOME/bin` into your `$PATH` into your `.bashrc`:
 ```shell
-go install github.com/unkaktus/robin/cmd/robin@latest
-```
-
-3. Add `$HOME/go/bin` into your `$PATH` into your `.bashrc`:
-```shell
-export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 ```
 
 ### Manual building
