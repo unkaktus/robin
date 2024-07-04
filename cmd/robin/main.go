@@ -394,6 +394,23 @@ func run() (err error) {
 					return nil
 				},
 			},
+			{
+				Name:  "show",
+				Usage: "show the job data",
+				Flags: []cli.Flag{},
+				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+					jobName := cCtx.Args().Get(0)
+
+					if err := robin.Show(bs, jobName); err != nil {
+						return fmt.Errorf("show error: %w", err)
+					}
+
+					return nil
+				},
+			},
 		},
 	}
 	return app.Run(os.Args)

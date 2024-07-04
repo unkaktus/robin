@@ -32,7 +32,7 @@ func Logs(b BatchSystem, jobName string, outputType string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("execute tail: %w", err)
+		return fmt.Errorf("execute editor: %w", err)
 	}
 
 	return nil
