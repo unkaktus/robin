@@ -103,19 +103,6 @@ and configuration file `data.csv` for the run:
 $ robin begin -f compare_apples.begin data.csv
 ```
 
-
-#### Remote commands
-
-Do all above without logging manually to the cluster:
-
-```shell
-$ robin on supercomp list
-```
-
-```shell
-$ robin on supercomp shell compare_apples
-```
-
 This requires to have `robin` to be installed and
 added to the `PATH` there.
 
