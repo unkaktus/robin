@@ -325,18 +325,6 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:  "on",
-				Usage: "run robin commands remotely, e.g., robin on machine list",
-				Action: func(cCtx *cli.Context) error {
-					machine := cCtx.Args().First()
-					cmdline := cCtx.Args().Tail()
-					if err := robin.On(machine, cmdline); err != nil {
-						return fmt.Errorf("robin on remote: %w", err)
-					}
-					return nil
-				},
-			},
-			{
 				Name:  "port-forward",
 				Usage: "forward a TCP port to a job node on a cluster",
 				Flags: []cli.Flag{
