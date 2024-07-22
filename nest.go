@@ -56,7 +56,7 @@ func Nest(bs BatchSystem, cmdline []string, noCommand, verbose bool) error {
 		}
 		err = process.Wait()
 		if err != nil {
-			return fmt.Errorf("waiting on the process: %w", err)
+			return fmt.Errorf("nested process: %w", err)
 		}
 	}
 	return nil
