@@ -232,6 +232,12 @@ func run() (err error) {
 						Value: false,
 						Usage: "use the latest running job",
 					},
+					&cli.BoolFlag{
+						Name:    "verbose",
+						Aliases: []string{"v"},
+						Value:   false,
+						Usage:   "print errors",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
@@ -254,8 +260,15 @@ func run() (err error) {
 							return fmt.Errorf("node ID must be an integer")
 						}
 					}
-					if err := bs.Shell(jobName, nodeID); err != nil {
-						return fmt.Errorf("ssh error: %w", err)
+					verbose := cCtx.Bool("verbose")
+					for {
+						err := bs.Shell(jobName, nodeID)
+						if err == nil {
+							break
+						}
+						if verbose {
+							fmt.Fprintf(os.Stderr, "robin shell error: %v\n", err)
+						}
 					}
 					return nil
 				},
