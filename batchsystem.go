@@ -3,7 +3,6 @@ package robin
 import (
 	"time"
 
-	"github.com/unkaktus/robin/batchsystem"
 	"github.com/unkaktus/robin/nest"
 )
 
@@ -13,7 +12,6 @@ type BatchSystem interface {
 	Shell(jobName string, nodeID int) error
 	Cancel(jobName string) error
 	NestVariables() nest.Variables
-	JobData(batchsystem.Job) (string, error)
 	Submit(jobData string) error
 }
 

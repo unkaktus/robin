@@ -152,33 +152,6 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:  "begin",
-				Usage: "begin a job",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:  "f",
-						Value: "begin.toml",
-						Usage: "path to begin.toml file",
-					},
-					&cli.BoolFlag{
-						Name:  "dry",
-						Value: false,
-						Usage: "dry run: print the job data only, do not submit",
-					},
-				},
-				Action: func(cCtx *cli.Context) error {
-					if bs == nil {
-						return errUnsupported
-					}
-
-					configFilename := cCtx.Args().Get(0)
-					if err := robin.Begin(bs, cCtx.String("f"), configFilename, cCtx.Bool("dry")); err != nil {
-						return fmt.Errorf("begin: %w", err)
-					}
-					return nil
-				},
-			},
-			{
 				Name:  "submit",
 				Usage: "submit a job",
 				Action: func(cCtx *cli.Context) error {
