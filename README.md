@@ -5,7 +5,7 @@
 Works on Slurm, PBSPro, and tmux.
 
 
-### Binary nstallation
+### Binary installation
 
 0. In case you don't have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
 
