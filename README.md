@@ -5,7 +5,7 @@
 Works on Slurm, PBSPro, and tmux.
 
 
-### Installation using Go
+### Binary nstallation
 
 0. In case you don't have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
 
