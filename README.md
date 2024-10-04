@@ -9,7 +9,7 @@ Works on Slurm, PBSPro, and tmux.
 
 0. In case you don't have internet access there, you can use `mitten` (https://github.com/unkaktus/mitten).
 
-1.
+1. Download and install the `robin` binary:
 ```shell
 curl -L -o robin https://github.com/unkaktus/robin/releases/latest/download/robin-linux-amd64
 mkdir -p ~/bin
