@@ -24,8 +24,9 @@ import (
 )
 
 const (
-	tokenLength  int    = 24
-	fallbackPort uint64 = 2222
+	tokenLength      int    = 24
+	tokenNonceLength int    = 8
+	fallbackPort     uint64 = 2222
 )
 
 func UserPort() uint64 {
@@ -49,8 +50,8 @@ func UserPort() uint64 {
 	return number
 }
 
-func generateToken() string {
-	rb := make([]byte, tokenLength)
+func generateRandomString(length int) string {
+	rb := make([]byte, length)
 	_, err := rand.Read(rb)
 
 	if err != nil {
@@ -66,8 +67,8 @@ func writeTokenFile() (token, filename string, err error) {
 	if err != nil {
 		return "", "", fmt.Errorf("get current working directory: %w", err)
 	}
-	filename = filepath.Join(cwd, ".robin-token")
-	token = generateToken()
+	filename = filepath.Join(cwd, ".robin-token.", generateRandomString(tokenNonceLength))
+	token = generateRandomString(tokenLength)
 	err = os.WriteFile(filename, []byte(token), 0600)
 	if err != nil {
 		return "", "", fmt.Errorf("writing token file: %w", err)
