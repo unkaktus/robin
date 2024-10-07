@@ -25,7 +25,7 @@ func (c *Comment) Decode(data string) error {
 	}
 	commentJSON, err := base64.RawStdEncoding.DecodeString(data)
 	if err != nil {
-		return fmt.Errorf("unquote json: %w", err)
+		return fmt.Errorf("decode base64: %w", err)
 	}
 	err = json.Unmarshal(commentJSON, c)
 	if err != nil {

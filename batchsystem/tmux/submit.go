@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode"
+
+	"github.com/unkaktus/robin"
 )
 
 func parseJobData(jobData string) map[string]string {
@@ -81,6 +83,9 @@ func (b *Tmux) Submit(jobData string) error {
 	nameData := NameData{
 		Name:    jobParameters["job-name"],
 		LogFile: logFile,
+		Comment: robin.Comment{
+			JobDataFilename: jobDataFilename,
+		},
 	}
 
 	jobDataReader := strings.NewReader(jobData)

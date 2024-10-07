@@ -61,7 +61,7 @@ func listOutputToJobList(listOutput ListOutput) (jobs []robin.Job, err error) {
 			Walltime:         time.Since(creationTime),
 			OutputFile:       nameData.LogFile,
 			WorkingDirectory: listedJob.WorkingDirectory,
-			Comment:          listedJob.Name,
+			Comment:          nameData.Comment.Encode(),
 		}
 		jobs = append(jobs, job)
 	}

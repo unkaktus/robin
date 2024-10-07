@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/unkaktus/robin"
 )
 
 type Tmux struct {
@@ -19,6 +21,7 @@ func (tm *Tmux) Init() error {
 }
 
 type NameData struct {
+	robin.Comment
 	Name    string `json:"name"`
 	LogFile string `json:"log_file"`
 }
