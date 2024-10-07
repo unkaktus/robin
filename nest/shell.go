@@ -67,7 +67,7 @@ func writeTokenFile() (token, filename string, err error) {
 	if err != nil {
 		return "", "", fmt.Errorf("get current working directory: %w", err)
 	}
-	filename = filepath.Join(cwd, ".robin-token.", generateRandomString(tokenNonceLength))
+	filename = filepath.Join(cwd, ".robin-token."+generateRandomString(tokenNonceLength))
 	token = generateRandomString(tokenLength)
 	err = os.WriteFile(filename, []byte(token), 0600)
 	if err != nil {
