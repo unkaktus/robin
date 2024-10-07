@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	version        string
 	errUnsupported error = errors.New("unsupported batch system")
 )
 
@@ -51,6 +52,7 @@ func run() (err error) {
 				Email: "git@unkaktus.art",
 			},
 		},
+		Version: version,
 		Commands: []*cli.Command{
 			{
 				Name:    "list",
