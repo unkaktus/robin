@@ -16,7 +16,7 @@ func (b *Tmux) Cancel(jobName string) error {
 	for _, job := range jobList {
 		if job.Name == jobName {
 			found = true
-			cmd := exec.Command("tmux", "kill-session", "-t", job.Comment)
+			cmd := exec.Command("tmux", "kill-session", "-t", job.ID)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr

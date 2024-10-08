@@ -46,12 +46,11 @@ func listOutputToJobList(listOutput ListOutput) (jobs []robin.Job, err error) {
 			return nil, fmt.Errorf("decode name data: %w", err)
 		}
 
-		ID := strings.TrimPrefix(listedJob.ID, "$")
 		creationTime := time.Unix(listedJob.CreationTime, 0)
 
 		job := robin.Job{
 			Name:             nameData.Name,
-			ID:               ID,
+			ID:               nameData.EncodeToString(),
 			Queue:            "tmux",
 			State:            "R",
 			CreationTime:     creationTime,
