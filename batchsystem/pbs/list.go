@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"os/user"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ type ListOutput struct {
 		OutputPath   string `json:"Output_Path"`
 		VariableList struct {
 			WorkDir      string `json:"PBS_O_WORKDIR"`
+			Logname      string `json:"PBS_O_LOGNAME"`
 			RobinComment string `json:"robin_comment"`
 		} `json:"Variable_List"`
 		ExitStatus    int `json:"Exit_status"`
@@ -49,6 +51,7 @@ func query() (*ListOutput, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal JSON: %w", err)
 	}
+
 	return listOutput, nil
 }
 
@@ -89,8 +92,18 @@ func filePath(path string) string {
 	return sp[1]
 }
 
-func listOutputToJobList(listOutput *ListOutput) (jobs []robin.Job, err error) {
+func listOutputToJobList(listOutput *ListOutput, all bool) (jobs []robin.Job, err error) {
+	currentUser, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("get current user: %w", err)
+	}
+
 	for jobID, listedJob := range listOutput.Jobs {
+		if !all {
+			if listedJob.VariableList.Logname != currentUser.Username {
+				continue
+			}
+		}
 		var creationTime time.Time
 		if listedJob.CreationTime != "" {
 			creationTime, err = time.Parse(time.ANSIC, listedJob.CreationTime)
@@ -153,7 +166,7 @@ func (b *PBS) ListJobs(all bool) ([]robin.Job, error) {
 		return nil, fmt.Errorf("query list: %w", err)
 	}
 
-	jobList, err := listOutputToJobList(listOutput)
+	jobList, err := listOutputToJobList(listOutput, all)
 	if err != nil {
 		return nil, fmt.Errorf("convert to job list: %w", err)
 	}
