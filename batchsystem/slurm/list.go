@@ -85,10 +85,6 @@ func UnmarshalSqueueOutput(data []byte) (ListedJob, error) {
 }
 
 func query(all bool) ([]ListedJob, error) {
-	currentUser, err := user.Current()
-	if err != nil {
-		return nil, fmt.Errorf("get current user: %w", err)
-	}
 	req := []string{
 		"Name",
 		"JobID",
@@ -111,6 +107,10 @@ func query(all bool) ([]ListedJob, error) {
 		"-O", SqueueRequestString(req),
 	}
 	if !all {
+		currentUser, err := user.Current()
+		if err != nil {
+			return nil, fmt.Errorf("get current user: %w", err)
+		}
 		squeueArguments = append(squeueArguments,
 			[]string{"-u", currentUser.Uid}...,
 		)
