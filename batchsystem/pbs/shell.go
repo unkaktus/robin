@@ -2,11 +2,12 @@ package pbs
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/unkaktus/robin"
 )
 
-func (b *PBS) Shell(jobName string, nodeID int) error {
+func (b *PBS) Shell(jobName string, nodeID int, verbose bool) error {
 	jobList, err := b.ListJobs(true)
 	if err != nil {
 		return fmt.Errorf("list jobs: %w", err)
@@ -18,10 +19,15 @@ func (b *PBS) Shell(jobName string, nodeID int) error {
 			}
 			node := job.Nodes[nodeID]
 
-			if err := robin.Shell(node); err != nil {
-				return fmt.Errorf("execute ssh: %w", err)
+			for {
+				err := robin.Shell(node)
+				if err == nil {
+					break
+				}
+				if verbose {
+					fmt.Fprintf(os.Stderr, "robin shell error: %v\n", err)
+				}
 			}
-			break
 		}
 	}
 	return nil

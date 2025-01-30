@@ -47,7 +47,7 @@ func run() (err error) {
 		HelpName: "robin",
 		Usage:    "One tool for all HPC",
 		Authors: []*cli.Author{
-			&cli.Author{
+			{
 				Name:  "Ivan Markin",
 				Email: "git@unkaktus.art",
 			},
@@ -236,16 +236,7 @@ func run() (err error) {
 						}
 					}
 					verbose := cCtx.Bool("verbose")
-					for {
-						err := bs.Shell(jobName, nodeID)
-						if err == nil {
-							break
-						}
-						if verbose {
-							fmt.Fprintf(os.Stderr, "robin shell error: %v\n", err)
-						}
-					}
-					return nil
+					return bs.Shell(jobName, nodeID, verbose)
 				},
 			},
 			{
