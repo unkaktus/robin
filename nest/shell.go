@@ -27,6 +27,16 @@ const (
 	tokenLength      int    = 24
 	tokenNonceLength int    = 8
 	fallbackPort     uint64 = 2222
+	banner           string = `     ━━━━━━━┏┓━━━━━━━━
+     ━━━━━━━┃┃━━━━━━━━
+     ┏━┓┏━━┓┃┗━┓┏┓┏━━┓
+     ┃┏┛┃┏┓┃┃┏┓┃┣┫┃┏┓┃
+     ┃┃━┃┗┛┃┃┗┛┃┃┃┃┃┃┃
+     ┗┛━┗━━┛┗━━┛┗┛┗┛┗┛
+     ━━━━━━━━━━━━━━━━━
+     ━━━━━━━━━━━━━━━━━
+GREETINGS, PROFESSOR FALKEN.
+`
 )
 
 func UserPort() uint64 {
@@ -94,7 +104,7 @@ func kiHandler(ctx ssh.Context, challenger gossh.KeyboardInteractiveChallenge) b
 }
 
 func sessionHandler(s ssh.Session) {
-	io.WriteString(s, "Connected to robin shell.\n")
+	io.WriteString(s, banner)
 	ptyReq, winCh, isPty := s.Pty()
 	if !isPty {
 		io.WriteString(s, "No PTY requested.\n")
