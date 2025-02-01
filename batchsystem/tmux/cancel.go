@@ -23,7 +23,7 @@ func (b *Tmux) Cancel(jobName string) error {
 			if err := cmd.Run(); err != nil {
 				return fmt.Errorf("execute qsig: %w", err)
 			}
-			log.Printf("cancelled %s (%s)", job.Name, job.ID)
+			log.Printf("cancelled %s", job.Name)
 		}
 	}
 	if !found {
