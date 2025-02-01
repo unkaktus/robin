@@ -136,7 +136,7 @@ func kiClientHandler(name, instruction string, questions []string, echos []bool)
 	return []string{string(token)}, nil
 }
 
-func shellIsPresent() bool {
+func anotherRobinNestIsRunning() bool {
 	config := &gossh.ClientConfig{
 		HostKeyCallback: gossh.InsecureIgnoreHostKey(),
 		Auth: []gossh.AuthMethod{
@@ -153,7 +153,7 @@ func shellIsPresent() bool {
 }
 
 func RunShellServer(nodeHead chan struct{}) error {
-	if shellIsPresent() {
+	if anotherRobinNestIsRunning() {
 		return nil
 	}
 	userPort := UserPort()
