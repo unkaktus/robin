@@ -103,6 +103,13 @@ func kiHandler(ctx ssh.Context, challenger gossh.KeyboardInteractiveChallenge) b
 	return inputToken == token
 }
 
+func getShell() string {
+	if shell := os.Getenv("SHELL"); shell != "" {
+		return shell
+	}
+	return "/bin/sh"
+}
+
 func sessionHandler(s ssh.Session) {
 	io.WriteString(s, banner)
 	ptyReq, winCh, isPty := s.Pty()
@@ -111,7 +118,7 @@ func sessionHandler(s ssh.Session) {
 		s.Exit(1)
 		return
 	}
-	cmd := exec.Command("bash")
+	cmd := exec.Command(getShell())
 	cmd.Env = append(os.Environ(), []string{
 		fmt.Sprintf("TERM=%s", ptyReq.Term),
 	}...)
