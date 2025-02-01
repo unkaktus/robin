@@ -70,20 +70,24 @@ To connect to the shell on the job nodes, you first need
 to start your job binary via `robin nest`:
 
 ```shell
+export MPI_SHEPHERD=true # Needed for PBSPro
 [mpirun -n 16] robin nest ./exe/binary
 ```
-For `nest` on PBS Pro, you need to export the following variable
-inside your job:
+
+Then, to connect to the shell of the node 1 (starting from 0) of running job `Compare_Apples`:
 
 ```shell
-export MPI_SHEPHERD=true
+$ robin shell Compare_Apples/1
+node123$
 ```
 
-Then, to connect to the shell of the node 1 of running job `Compare_Apples`:
+#### Exec
 
+Using `robin exec`, you can execute a single command on the job nodes:
 ```shell
-$ robin shell Compare_Apples 1
-node123$
+$ robin exec Compare_Apples/4 "ps aux"
+  PID TTY           TIME CMD
+ 9993 ttys000    0:00.05 compare_apples
 ```
 
 #### Stopping jobs
@@ -93,18 +97,6 @@ Cancel job `Compare_Apples`:
 ```shell
 $ robin cancel Compare_Apples
 ```
-
-#### Portable jobs
-
-Start a portable job using `compare_apples.begin` file 
-and configuration file `data.csv` for the run:
-
-```shell
-$ robin begin -f compare_apples.begin data.csv
-```
-
-This requires to have `robin` to be installed and
-added to the `PATH` there.
 
 #### Port forwarding
 
