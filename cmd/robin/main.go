@@ -17,6 +17,7 @@ import (
 	"github.com/unkaktus/robin/batchsystem/pbs"
 	"github.com/unkaktus/robin/batchsystem/slurm"
 	"github.com/unkaktus/robin/batchsystem/tmux"
+	"github.com/unkaktus/robin/shell"
 	"github.com/urfave/cli/v2"
 )
 
@@ -45,7 +46,7 @@ func run() (err error) {
 	app := &cli.App{
 		Name:     "robin",
 		HelpName: "robin",
-		Usage:    "One tool for all HPC",
+		Usage:    "Batch job management that feels like flying",
 		Authors: []*cli.Author{
 			{
 				Name:  "Ivan Markin",
@@ -57,7 +58,7 @@ func run() (err error) {
 			{
 				Name:    "list",
 				Aliases: []string{"ls"},
-				Usage:   "list jobs",
+				Usage:   "List jobs",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "all",
@@ -99,7 +100,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "logs",
-				Usage: "get the logs of a job",
+				Usage: "Open/tail the jobs logs",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "f",
@@ -155,7 +156,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "submit",
-				Usage: "submit a job",
+				Usage: "Submit a job",
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {
 						return errUnsupported
@@ -171,7 +172,7 @@ func run() (err error) {
 			{
 				Name:    "cancel",
 				Aliases: []string{"stop"},
-				Usage:   "cancel jobs",
+				Usage:   "Cancel job",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "latest",
@@ -199,14 +200,10 @@ func run() (err error) {
 				},
 			},
 			{
-				Name:  "shell",
-				Usage: "login into nodes",
+				Name:        "shell",
+				Description: "",
+				Usage:       "Login into job nodes",
 				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:  "latest",
-						Value: false,
-						Usage: "use the latest running job",
-					},
 					&cli.BoolFlag{
 						Name:    "verbose",
 						Aliases: []string{"v"},
@@ -219,29 +216,53 @@ func run() (err error) {
 						return errUnsupported
 					}
 
-					jobName := cCtx.Args().Get(0)
-					if cCtx.Bool("latest") {
-						job, err := robin.LatestJob(bs)
-						if err != nil {
-							return fmt.Errorf("looking up the latest job: %w", err)
-						}
-						jobName = job.Name
-					}
-					nodeIDString := cCtx.Args().Get(1)
-					nodeID := 0
-					if nodeIDString != "" {
-						nodeID, err = strconv.Atoi(nodeIDString)
-						if err != nil {
-							return fmt.Errorf("node ID must be an integer")
-						}
-					}
+					targetString := cCtx.Args().Get(0)
 					verbose := cCtx.Bool("verbose")
-					return bs.Shell(jobName, nodeID, verbose)
+
+					target, err := shell.ParseTarget(targetString)
+					if err != nil {
+						return fmt.Errorf("parse shell target: %w", err)
+					}
+
+					return bs.Shell(target, "", verbose)
+				},
+			},
+			{
+				Name:        "exec",
+				Description: "",
+				Usage:       "Execute commands on job nodes",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "verbose",
+						Aliases: []string{"v"},
+						Value:   false,
+						Usage:   "print errors",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
+					targetString := cCtx.Args().Get(0)
+					command := strings.Join(cCtx.Args().Tail(), " ")
+					verbose := cCtx.Bool("verbose")
+
+					if command == "" {
+						return fmt.Errorf("command not specified")
+					}
+
+					target, err := shell.ParseTarget(targetString)
+					if err != nil {
+						return fmt.Errorf("parse shell target: %w", err)
+					}
+
+					return bs.Shell(target, command, verbose)
 				},
 			},
 			{
 				Name:  "nest",
-				Usage: "run nest",
+				Usage: "Run nest-ed applications",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:  "no-command",
@@ -270,7 +291,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "proxy",
-				Usage: "run service proxy",
+				Usage: "Run service proxy",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "addr",
@@ -292,7 +313,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "port-forward",
-				Usage: "forward a TCP port to a job node on a cluster",
+				Usage: "Forward a TCP port to a job node on a cluster",
 				Flags: []cli.Flag{
 					&cli.IntFlag{
 						Name:    "port",
@@ -333,7 +354,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "update",
-				Usage: "update itself",
+				Usage: "Update itself",
 				Action: func(cCtx *cli.Context) error {
 					robinURL := fmt.Sprintf("https://github.com/unkaktus/robin/releases/latest/download/robin-%s-%s", runtime.GOOS, runtime.GOARCH)
 					resp, err := http.Get(robinURL)
@@ -355,7 +376,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "which",
-				Usage: "print the detected batch system types",
+				Usage: "Print the detected batch system type",
 				Action: func(cCtx *cli.Context) error {
 					fmt.Println(batchsystem.DetectBatchSystem())
 					return nil
@@ -363,7 +384,7 @@ func run() (err error) {
 			},
 			{
 				Name:  "show",
-				Usage: "show the job data",
+				Usage: "Open the raw batch script in editor",
 				Flags: []cli.Flag{},
 				Action: func(cCtx *cli.Context) error {
 					if bs == nil {

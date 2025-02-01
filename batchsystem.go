@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/unkaktus/robin/nest"
+	"github.com/unkaktus/robin/shell"
 )
 
 type BatchSystem interface {
 	Init() error
 	ListJobs(all bool) ([]Job, error)
-	Shell(jobName string, nodeID int, verbose bool) error
+	Shell(target *shell.Target, command string, verbose bool) error
 	Cancel(jobName string) error
 	NestVariables() nest.Variables
 	Submit(jobData string) error

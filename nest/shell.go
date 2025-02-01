@@ -110,33 +110,74 @@ func getShell() string {
 	return "/bin/sh"
 }
 
-func sessionHandler(s ssh.Session) {
+func sessionHandlerPty(s ssh.Session) {
 	io.WriteString(s, banner)
-	ptyReq, winCh, isPty := s.Pty()
-	if !isPty {
-		io.WriteString(s, "No PTY requested.\n")
-		s.Exit(1)
-		return
-	}
+
+	ptyReq, winCh, _ := s.Pty()
+
 	cmd := exec.Command(getShell())
-	cmd.Env = append(os.Environ(), []string{
-		fmt.Sprintf("TERM=%s", ptyReq.Term),
-	}...)
+	cmd.Env = os.Environ()
+
+	cmd.Env = append(cmd.Env, fmt.Sprintf("TERM=%s", ptyReq.Term))
 	f, err := pty.Start(cmd)
 	if err != nil {
-		log.Printf("start pty: %v", err)
+		log.Printf("start pty command: %v", err)
 		return
 	}
+	defer f.Close()
+
 	go func() {
 		for win := range winCh {
 			setWinsize(f, win.Width, win.Height)
 		}
 	}()
+
 	go func() {
-		io.Copy(f, s) // stdin
+		io.Copy(f, s)
 	}()
-	io.Copy(s, f) // stdout
-	cmd.Wait()
+	go func() {
+		io.Copy(s, f)
+	}()
+	if err := cmd.Wait(); err != nil {
+		log.Printf("wait: %v", err)
+	}
+	s.Exit(cmd.ProcessState.ExitCode())
+}
+
+func sessionHandlerSimple(s ssh.Session) {
+	cmd := exec.Command(getShell(), []string{"-c", strings.Join(s.Command(), " ")}...)
+
+	cmd.Env = os.Environ()
+
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+
+	err := cmd.Start()
+	if err != nil {
+		log.Printf("start command: %v", err)
+		return
+	}
+
+	go func() {
+		io.Copy(stdin, s)
+	}()
+	go func() {
+		io.Copy(s, stdout)
+	}()
+	if err := cmd.Wait(); err != nil {
+		log.Printf("wait: %v", err)
+	}
+	s.Exit(cmd.ProcessState.ExitCode())
+}
+
+func sessionHandler(s ssh.Session) {
+	defer s.Close()
+	_, _, isPty := s.Pty()
+	if isPty {
+		sessionHandlerPty(s)
+		return
+	}
+	sessionHandlerSimple(s)
 }
 
 func setWinsize(f *os.File, w, h int) {

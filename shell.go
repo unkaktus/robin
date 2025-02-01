@@ -2,7 +2,7 @@ package robin
 
 import (
 	"fmt"
-	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -14,32 +14,14 @@ import (
 
 func kiHandler(name, instruction string, questions []string, echos []bool) (answers []string, err error) {
 	tokenFilename := strings.TrimSpace(questions[0])
-	token, err := ioutil.ReadFile(tokenFilename)
+	token, err := os.ReadFile(tokenFilename)
 	if err != nil {
 		return nil, fmt.Errorf("read token file: %w", err)
 	}
 	return []string{string(token)}, nil
 }
 
-func Shell(hostname string) error {
-	config := &gossh.ClientConfig{
-		HostKeyCallback: gossh.InsecureIgnoreHostKey(),
-		Auth: []gossh.AuthMethod{
-			gossh.KeyboardInteractive(kiHandler),
-		},
-	}
-	addr := hostname + ":" + strconv.FormatUint(nest.UserPort(), 10)
-	conn, err := gossh.Dial("tcp", addr, config)
-	if err != nil {
-		return fmt.Errorf("dial ssh: %w", err)
-	}
-	defer conn.Close()
-	session, err := conn.NewSession()
-	if err != nil {
-		return fmt.Errorf("create session: %w", err)
-	}
-	defer session.Close()
-
+func ShellPty(session *gossh.Session) error {
 	fd := int(os.Stdin.Fd())
 	state, err := term.MakeRaw(fd)
 	if err != nil {
@@ -72,5 +54,47 @@ func Shell(hostname string) error {
 	if err != nil {
 		return fmt.Errorf("start session: %w", err)
 	}
+	if err := session.Wait(); err != nil {
+		log.Printf("robin shell: wait session: %v", err)
+	}
+	return nil
+}
+
+func ShellSimple(session *gossh.Session, command string) error {
+	session.Stdin = os.Stdin
+	session.Stdout = os.Stdout
+	session.Stderr = os.Stderr
+
+	err := session.Start(command)
+	if err != nil {
+		return fmt.Errorf("start session: %w", err)
+	}
 	return session.Wait()
+}
+
+func Shell(hostname string, command string) error {
+	config := &gossh.ClientConfig{
+		HostKeyCallback: gossh.InsecureIgnoreHostKey(),
+		Auth: []gossh.AuthMethod{
+			gossh.KeyboardInteractive(kiHandler),
+		},
+	}
+	addr := hostname + ":" + strconv.FormatUint(nest.UserPort(), 10)
+	conn, err := gossh.Dial("tcp", addr, config)
+	if err != nil {
+		return fmt.Errorf("dial ssh: %w", err)
+	}
+	defer conn.Close()
+	session, err := conn.NewSession()
+	if err != nil {
+		return fmt.Errorf("create session: %w", err)
+	}
+	defer session.Close()
+
+	fd := int(os.Stdin.Fd())
+	if term.IsTerminal(fd) && command == "" {
+		return ShellPty(session)
+	}
+
+	return ShellSimple(session, command)
 }

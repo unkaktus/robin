@@ -5,37 +5,32 @@ import (
 	"os"
 
 	"github.com/unkaktus/robin"
+	"github.com/unkaktus/robin/shell"
 )
 
-func (b *Tmux) Shell(jobName string, nodeID int, verbose bool) error {
-	jobList, err := b.ListJobs(true)
+func (b *Tmux) Shell(target *shell.Target, command string, verbose bool) error {
+	job, err := b.FindJob(target.JobName)
 	if err != nil {
-		return fmt.Errorf("list jobs: %w", err)
+		return fmt.Errorf("find job: %w", err)
 	}
-	found := false
-	for _, job := range jobList {
-		if job.Name == jobName {
-			found = true
-			if nodeID < 0 || nodeID >= len(job.Nodes) {
-				return fmt.Errorf("node ID is outside the node list range")
-			}
-			node := job.Nodes[nodeID]
-
-			node = robin.RewriteNode(node)
-
-			for {
-				err := robin.Shell(node)
-				if err == nil {
-					break
-				}
-				if verbose {
-					fmt.Fprintf(os.Stderr, "robin shell error: %v\n", err)
-				}
-			}
-		}
-	}
-	if !found {
+	if job == nil {
 		return fmt.Errorf("job not found")
 	}
+
+	if target.NodeID < 0 || target.NodeID >= len(job.Nodes) {
+		return fmt.Errorf("node ID is outside the node list range")
+	}
+	node := job.Nodes[target.NodeID]
+
+	for {
+		err := robin.Shell(node, command)
+		if err == nil {
+			break
+		}
+		if verbose {
+			fmt.Fprintf(os.Stderr, "robin shell error: %v\n", err)
+		}
+	}
+
 	return nil
 }
