@@ -138,9 +138,7 @@ func sessionHandlerPty(s ssh.Session) {
 	go func() {
 		io.Copy(s, f)
 	}()
-	if err := cmd.Wait(); err != nil {
-		log.Printf("wait: %v", err)
-	}
+	cmd.Wait()
 	s.Exit(cmd.ProcessState.ExitCode())
 }
 
@@ -164,9 +162,7 @@ func sessionHandlerSimple(s ssh.Session) {
 	go func() {
 		io.Copy(s, stdout)
 	}()
-	if err := cmd.Wait(); err != nil {
-		log.Printf("wait: %v", err)
-	}
+	cmd.Wait()
 	s.Exit(cmd.ProcessState.ExitCode())
 }
 

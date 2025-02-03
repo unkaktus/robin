@@ -2,7 +2,6 @@ package robin
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -54,9 +53,7 @@ func ShellPty(session *gossh.Session) error {
 	if err != nil {
 		return fmt.Errorf("start session: %w", err)
 	}
-	if err := session.Wait(); err != nil {
-		log.Printf("robin shell: wait session: %v", err)
-	}
+	session.Wait()
 	return nil
 }
 
@@ -69,7 +66,8 @@ func ShellSimple(session *gossh.Session, command string) error {
 	if err != nil {
 		return fmt.Errorf("start session: %w", err)
 	}
-	return session.Wait()
+	session.Wait()
+	return nil
 }
 
 func Shell(hostname string, command string) error {
