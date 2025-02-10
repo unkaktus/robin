@@ -23,7 +23,7 @@ func (b *PBS) Shell(target *shell.Target, command string, verbose bool) error {
 	node := job.Nodes[target.NodeID]
 	node = robin.RewriteNode(node)
 	for {
-		err := robin.Shell(node, command)
+		err := robin.Shell(node, command, shell.TargetPrompt(target))
 		if err == nil {
 			break
 		}

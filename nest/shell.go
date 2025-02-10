@@ -117,6 +117,7 @@ func sessionHandlerPty(s ssh.Session) {
 
 	cmd := exec.Command(getShell())
 	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, s.Environ()...)
 
 	cmd.Env = append(cmd.Env, fmt.Sprintf("TERM=%s", ptyReq.Term))
 	f, err := pty.Start(cmd)

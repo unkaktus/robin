@@ -70,7 +70,7 @@ func ShellSimple(session *gossh.Session, command string) error {
 	return nil
 }
 
-func Shell(hostname string, command string) error {
+func Shell(hostname, command, prompt string) error {
 	config := &gossh.ClientConfig{
 		HostKeyCallback: gossh.InsecureIgnoreHostKey(),
 		Auth: []gossh.AuthMethod{
@@ -88,6 +88,10 @@ func Shell(hostname string, command string) error {
 		return fmt.Errorf("create session: %w", err)
 	}
 	defer session.Close()
+
+	if prompt != "" {
+		session.Setenv("PS1_robin", prompt)
+	}
 
 	fd := int(os.Stdin.Fd())
 	if term.IsTerminal(fd) && command == "" {
