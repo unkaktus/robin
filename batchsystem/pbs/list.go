@@ -112,6 +112,10 @@ func listOutputToJobList(listOutput *ListOutput, all bool) (jobs []robin.Job, er
 			}
 		}
 
+		if listedJob.State == "E" {
+			continue
+		}
+
 		nodes, err := parseNodeList(listedJob.ExecHosts)
 		if err != nil {
 			return nil, fmt.Errorf("parsing node list: %w", err)
