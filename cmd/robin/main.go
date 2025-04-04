@@ -170,6 +170,21 @@ func run() (err error) {
 				},
 			},
 			{
+				Name:  "resubmit",
+				Usage: "Resubmit a job",
+				Action: func(cCtx *cli.Context) error {
+					if bs == nil {
+						return errUnsupported
+					}
+
+					name := cCtx.Args().First()
+					if err := robin.Resubmit(bs, name); err != nil {
+						return fmt.Errorf("submit: %w", err)
+					}
+					return nil
+				},
+			},
+			{
 				Name:    "cancel",
 				Aliases: []string{"stop"},
 				Usage:   "Cancel job",

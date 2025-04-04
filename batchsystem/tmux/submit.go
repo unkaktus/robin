@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -94,8 +95,10 @@ func (b *Tmux) Submit(jobData string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("execute qsub: %w", err)
+		return fmt.Errorf("execute tmux: %w", err)
 	}
+
+	log.Printf("submitted %s", jobParameters["job-name"])
 
 	return nil
 }

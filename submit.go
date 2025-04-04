@@ -41,3 +41,36 @@ func Submit(bs BatchSystem, name string) error {
 	}
 	return nil
 }
+
+func Resubmit(bs BatchSystem, name string) error {
+	// Extract the job data filename from the comment
+	job, err := findJob(bs, name)
+	if err != nil {
+		return fmt.Errorf("find job: %w", err)
+	}
+
+	comment := &Comment{}
+	if err := comment.Decode(job.Comment); err != nil {
+		return fmt.Errorf("decode comment: %w", err)
+	}
+
+	if comment.JobDataFilename == "" {
+		return fmt.Errorf("no job data file")
+	}
+
+	jobData, err := os.ReadFile(comment.JobDataFilename)
+	if err != nil {
+		return fmt.Errorf("read job data file: %w", err)
+	}
+
+	// Cancel the job
+	if err := bs.Cancel(name); err != nil {
+		return fmt.Errorf("cancel error: %w", err)
+	}
+
+	// Submit with the same job data
+	if err := bs.Submit(string(jobData)); err != nil {
+		return fmt.Errorf("submit: %w", err)
+	}
+	return nil
+}
