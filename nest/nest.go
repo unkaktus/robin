@@ -74,7 +74,7 @@ func RunCommand(cmdline []string, vars Variables) (*Process, error) {
 	process.wg.Add(1)
 	go func() {
 		defer process.wg.Done()
-		logger := log.Logger.With().Str("stream", "stdout").Logger()
+		logger := log.Logger
 		scanner := bufio.NewScanner(process.stdout)
 		for scanner.Scan() {
 			logger.Info().Msg(scanner.Text())
@@ -88,10 +88,10 @@ func RunCommand(cmdline []string, vars Variables) (*Process, error) {
 	process.wg.Add(1)
 	go func() {
 		defer process.wg.Done()
-		logger := log.Logger.With().Str("stream", "stderr").Logger()
+		logger := log.Logger
 		scanner := bufio.NewScanner(process.stderr)
 		for scanner.Scan() {
-			logger.Info().Msg(scanner.Text())
+			logger.Error().Msg(scanner.Text())
 		}
 		if err := scanner.Err(); err != nil {
 			logger.Err(err)

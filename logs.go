@@ -88,11 +88,9 @@ func Logtail(b BatchSystem, jobName, outputType string, nBytes int) error {
 		PartsOrder: []string{
 			zerolog.TimestampFieldName,
 			zerolog.LevelFieldName,
-			"stream",
 			zerolog.MessageFieldName,
 		},
-		TimeFormat:    time.DateTime,
-		FieldsExclude: []string{"stream"},
+		TimeFormat: time.DateTime,
 	}
 	t, err := tail.TailFile(logFile, tailConfig)
 	if err != nil {
