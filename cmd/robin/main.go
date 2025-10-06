@@ -38,9 +38,11 @@ func run() (err error) {
 		bs = &slurm.Slurm{}
 	case batchsystem.BatchTmux:
 		bs = &tmux.Tmux{}
+	default:
+		log.Fatal().Msg("no compatible batch system found")
 	}
 	if err := bs.Init(); err != nil {
-		log.Fatal().Err(err).Msg("initialize tmux")
+		log.Fatal().Err(err).Msg("initialize batch system")
 	}
 
 	app := &cli.App{
