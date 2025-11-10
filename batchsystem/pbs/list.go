@@ -3,6 +3,7 @@ package pbs
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"os/user"
 	"strings"
@@ -38,8 +39,17 @@ type ListOutput struct {
 	} `json:"Jobs"`
 }
 
+func locateQstatPath() string {
+	filename := "/opt/pbs/bin/qstat"
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return "qstat"
+	}
+	return filename
+}
+
 func query() (*ListOutput, error) {
-	cmd := exec.Command("qstat", "-f", "-F", "json")
+	cmd := exec.Command(locateQstatPath(), "-f", "-F", "json")
 	out, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("exectute command: %w", err)
