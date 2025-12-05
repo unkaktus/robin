@@ -27,15 +27,28 @@ const (
 	tokenLength      int    = 24
 	tokenNonceLength int    = 8
 	fallbackPort     uint64 = 2222
-	banner           string = `     ━━━━━━━┏┓━━━━━━━━
-     ━━━━━━━┃┃━━━━━━━━
-     ┏━┓┏━━┓┃┗━┓┏┓┏━━┓
-     ┃┏┛┃┏┓┃┃┏┓┃┣┫┃┏┓┃
-     ┃┃━┃┗┛┃┃┗┛┃┃┃┃┃┃┃
-     ┗┛━┗━━┛┗━━┛┗┛┗┛┗┛
-     ━━━━━━━━━━━━━━━━━
-     ━━━━━━━━━━━━━━━━━
-GREETINGS, PROFESSOR FALKEN.
+)
+
+const (
+	red      = "\033[31;1m"
+	yellow   = "\033[33;1m"
+	green    = "\033[32;1m"
+	blue     = "\033[34;1m"
+	colorEnd = "\033[0m"
+)
+
+var (
+	stripes []string = []string{red, green, yellow, blue, blue, yellow, green, red}
+
+	banner string = stripes[0] + `━━━━━━━━━━━━` + colorEnd + `┏┓` + stripes[0] + `━━━━━━━━━━━━━` + colorEnd + `
+` + stripes[1] + `━━━━━━━━━━━━` + colorEnd + `┃┃` + stripes[1] + `━━━━━━━━━━━━━` + colorEnd + `
+` + stripes[2] + `━━━━━` + colorEnd + `┏━┓┏━━┓┃┗━┓┏┓┏━━┓` + stripes[2] + `━━━━━` + colorEnd + `
+` + stripes[3] + `━━━━━` + colorEnd + `┃┏┛┃┏┓┃┃┏┓┃┣┫┃┏┓┃` + stripes[3] + `━━━━━` + colorEnd + `
+` + stripes[4] + `━━━━━` + colorEnd + `┃┃` + stripes[4] + `━` + colorEnd + `┃┗┛┃┃┗┛┃┃┃┃┃┃┃` + stripes[4] + `━━━━━` + colorEnd + `
+` + stripes[5] + `━━━━━` + colorEnd + `┗┛` + stripes[5] + `━` + colorEnd + `┗━━┛┗━━┛┗┛┗┛┗┛` + stripes[5] + `━━━━━` + colorEnd + `
+` + stripes[6] + `━━━━━━━━━━━━━━━━━━━━━━━━━━━` + colorEnd + `
+` + stripes[7] + `━━━━━━━━━━━━━━━━━━━━━━━━━━━` + colorEnd + `
+GREETINGS, PROFESSOR FALKEN
 `
 )
 
