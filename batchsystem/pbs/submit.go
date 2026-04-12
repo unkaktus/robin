@@ -1,16 +1,14 @@
 package pbs
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"unicode"
 
 	"github.com/unkaktus/robin"
+	"github.com/unkaktus/robin/paths"
 )
 
 func jobNameFromJobData(jobData string) string {
@@ -51,20 +49,7 @@ func (b *PBS) Submit(jobData string) error {
 		return fmt.Errorf("job with this name already exists")
 	}
 
-	// Write job data to a file
-	if err := os.MkdirAll(".robin/jobdata", 0700); err != nil {
-		return fmt.Errorf("cannot create .robin/jobdata directory: %w", err)
-	}
-
-	h := sha256.New()
-	h.Write([]byte(jobData))
-	hash := base64.RawURLEncoding.EncodeToString(h.Sum(nil))
-
-	jobDataFilename, err := filepath.Abs(filepath.Join(".robin/jobdata", hash))
-	if err != nil {
-		return fmt.Errorf("get absolute path for .robin/jobdata: %w", err)
-	}
-
+	jobDataFilename := paths.JobDataFilename(jobName, jobData)
 	if err := os.WriteFile(jobDataFilename, []byte(jobData), 0700); err != nil {
 		return fmt.Errorf("write job data file: %w", err)
 	}
